@@ -93,7 +93,22 @@ body {
   }
 }
 
-/* Custom cinematic scrollbar */
+/* Custom Swiper pagination bullets */
+.custom-bullet {
+  width: 10px !important;
+  height: 10px !important;
+  background: rgba(255, 255, 255, 0.4) !important;
+  border-radius: 9999px !important;
+  transition: all 0.3s ease !important;
+  opacity: 1 !important;
+  display: inline-block !important;
+  margin: 0 4px !important;
+}
+.custom-bullet.swiper-pagination-bullet-active {
+  width: 28px !important;
+  background: #FF6B35 !important;
+  box-shadow: 0 0 10px rgba(255, 107, 53, 0.6) !important;
+}
 ::-webkit-scrollbar {
   width: 7px;
   height: 7px;
