@@ -113,6 +113,35 @@ export function StudioForm({ initialData, onSubmit, isEditing = false }: StudioF
     e.preventDefault();
     setErrorMsg("");
 
+    const trimmedTitle = formData.title.trim();
+    if (trimmedTitle.length < 5) {
+      setErrorMsg("Studio title must be at least 5 characters.");
+      return;
+    }
+    const words = trimmedTitle.split(/\s+/).filter(Boolean);
+    if (words.length < 2) {
+      setErrorMsg("Studio title must contain at least 2 words (e.g. 'Brooklyn Daylight Loft').");
+      return;
+    }
+    if (!/^[a-zA-Z0-9\s&',.\-]+$/.test(trimmedTitle)) {
+      setErrorMsg("Studio title may only contain letters, numbers, spaces, and standard punctuation (&, ', -, ,, .).");
+      return;
+    }
+    const hasVowelRegex = /[aeiouyAEIOUY]/;
+    if (!words.every((w) => hasVowelRegex.test(w) || /^[0-9]+$/.test(w))) {
+      setErrorMsg("Studio title cannot consist of meaningless keyboard mash or random consonant sequences.");
+      return;
+    }
+    if (/(.)\1{3,}/.test(trimmedTitle)) {
+      setErrorMsg("Studio title cannot contain repeated character sequences.");
+      return;
+    }
+
+    if (formData.pricePerHour < 20 || formData.pricePerHour > 5000) {
+      setErrorMsg("Studio hourly rate must be between $20 and $5,000 per hour.");
+      return;
+    }
+
     if (formData.images.length === 0) {
       setErrorMsg("Please provide at least one photo of your studio space.");
       return;
@@ -183,6 +212,7 @@ export function StudioForm({ initialData, onSubmit, isEditing = false }: StudioF
               type="number"
               required
               min={20}
+              max={5000}
               value={formData.pricePerHour}
               onChange={(e) => setFormData({ ...formData, pricePerHour: Number(e.target.value) })}
               className="w-full px-4 py-2.5 rounded-xl bg-secondary border border-border text-sm text-foreground focus:outline-none focus:border-orange-brand"

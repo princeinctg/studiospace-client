@@ -161,6 +161,8 @@ export default function MyBookingsPage() {
                 const studio = booking.studio;
                 const isCancelled = booking.status === "cancelled";
                 const isConfirmed = booking.status === "confirmed";
+                const isCompleted = booking.status === "completed";
+                const canCancel = !isCancelled && !isCompleted;
 
                 return (
                   <div
@@ -187,6 +189,8 @@ export default function MyBookingsPage() {
                                 ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
                                 : isCancelled
                                 ? "bg-red-500/15 text-red-400 border-red-500/30"
+                                : isCompleted
+                                ? "bg-muted text-muted-foreground border-border"
                                 : "bg-gold/15 text-gold border-gold/30"
                             }`}
                           >
@@ -230,17 +234,49 @@ export default function MyBookingsPage() {
                           {formatCurrency(booking.totalPrice)}
                         </div>
                         <div className="text-[11px] text-muted-foreground">
-                          {booking.paymentStatus === "paid" ? (
-                            <span className="text-emerald-400 flex items-center gap-0.5 md:justify-end">
-                              <CheckCircle2 className="h-3 w-3" /> Paid & Secured
+                          {isCancelled ? (
+                            <span className="text-muted-foreground/80 flex items-center gap-1 md:justify-end font-medium">
+                              {booking.paymentStatus === "paid" ? (
+                                "Paid (Session Cancelled)"
+                              ) : booking.paymentStatus === "refunded" ? (
+                                "Refund Processed"
+                              ) : (
+                                "Payment Voided"
+                              )}
                             </span>
+                          ) : isConfirmed ? (
+                            booking.paymentStatus === "paid" ? (
+                              <span className="text-emerald-400 flex items-center gap-0.5 md:justify-end">
+                                <CheckCircle2 className="h-3 w-3" /> Paid & Secured
+                              </span>
+                            ) : booking.paymentStatus === "refunded" ? (
+                              <span className="text-muted-foreground flex items-center gap-0.5 md:justify-end">
+                                Refund Processed
+                              </span>
+                            ) : (
+                              <span className="text-gold flex items-center gap-0.5 md:justify-end">
+                                Payment Pending
+                              </span>
+                            )
+                          ) : isCompleted ? (
+                            booking.paymentStatus === "paid" ? (
+                              <span className="text-emerald-400 flex items-center gap-0.5 md:justify-end">
+                                <CheckCircle2 className="h-3 w-3" /> Paid
+                              </span>
+                            ) : (
+                              <span className="text-muted-foreground flex items-center gap-0.5 md:justify-end capitalize">
+                                Payment {booking.paymentStatus}
+                              </span>
+                            )
                           ) : (
-                            "Payment Pending"
+                            <span className="text-muted-foreground flex items-center gap-0.5 md:justify-end capitalize">
+                              Payment {booking.paymentStatus}
+                            </span>
                           )}
                         </div>
                       </div>
 
-                      {!isCancelled && (
+                      {canCancel && (
                         <button
                           onClick={() => setCancellingBooking(booking)}
                           className="px-3 py-1.5 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/10 text-xs font-semibold flex items-center gap-1 transition-colors"
