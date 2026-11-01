@@ -2,26 +2,109 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@layer base {
+  :root {
+    /* Light Theme (Warm Ivory Base #F5F2EB) */
+    --background: 43 33% 94%;
+    --foreground: 0 0% 9%;
+
+    --card: 43 38% 97%;
+    --card-foreground: 0 0% 9%;
+
+    --popover: 43 38% 97%;
+    --popover-foreground: 0 0% 9%;
+
+    /* Electric Orange CTA #FF6B35 */
+    --primary: 16 100% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Soft Cream #EDE3D2 */
+    --secondary: 38 41% 88%;
+    --secondary-foreground: 0 0% 12%;
+
+    --muted: 38 25% 85%;
+    --muted-foreground: 0 0% 40%;
+
+    /* Luxury Gold #C6A15B */
+    --accent: 40 48% 57%;
+    --accent-foreground: 0 0% 10%;
+
+    --border: 38 20% 80%;
+    --input: 38 20% 82%;
+    --ring: 16 100% 60%;
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    /* Dark Theme (Deep Charcoal Base #171717) */
+    --background: 0 0% 9%;
+    --foreground: 43 33% 94%;
+
+    --card: 0 0% 12%;
+    --card-foreground: 43 33% 94%;
+
+    --popover: 0 0% 11%;
+    --popover-foreground: 43 33% 94%;
+
+    /* Electric Orange CTA #FF6B35 */
+    --primary: 16 100% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Deep secondary surface */
+    --secondary: 0 0% 16%;
+    --secondary-foreground: 43 33% 94%;
+
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 62%;
+
+    /* Luxury Gold #C6A15B */
+    --accent: 40 48% 57%;
+    --accent-foreground: 0 0% 100%;
+
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 16 100% 60%;
+  }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  @apply border-border;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  @apply bg-background text-foreground antialiased selection:bg-orange-brand/30 selection:text-orange-brand min-h-screen transition-colors duration-300;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
+}
+
+/* Custom cinematic scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.6);
 }
