@@ -12,6 +12,7 @@ import { BookingModal } from "@/components/booking/BookingModal";
 import { Studio } from "@/types";
 import { apiRequest } from "@/lib/api";
 import { formatCurrency } from "@/lib/utils";
+import { useBookmarks } from "@/components/providers/BookmarkContext";
 import {
   Star,
   MapPin,
@@ -69,6 +70,7 @@ const fallbackStudiosMap: Record<string, Studio> = {
 export default function StudioDetailPage() {
   const params = useParams();
   const idOrSlug = String(params.id);
+  const { isBookmarked, toggleBookmark } = useBookmarks();
 
   const [studio, setStudio] = useState<Studio | null>(null);
   const [loading, setLoading] = useState(true);
@@ -155,10 +157,18 @@ export default function StudioDetailPage() {
                 <span>{isCopied ? "Link Copied!" : "Share"}</span>
               </button>
               <button
+                onClick={() => studio && toggleBookmark(studio)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-border bg-card hover:bg-secondary text-xs font-medium transition-colors"
+                aria-label={studio && isBookmarked(studio._id || studio.id || studio.slug) ? "Remove bookmark" : "Save studio"}
               >
-                <Heart className="h-3.5 w-3.5 text-orange-brand" />
-                <span>Save</span>
+                <Heart
+                  className={`h-3.5 w-3.5 transition-colors ${
+                    studio && isBookmarked(studio._id || studio.id || studio.slug)
+                      ? "fill-orange-brand text-orange-brand"
+                      : "text-orange-brand"
+                  }`}
+                />
+                <span>{studio && isBookmarked(studio._id || studio.id || studio.slug) ? "Saved" : "Save"}</span>
               </button>
             </div>
           </div>

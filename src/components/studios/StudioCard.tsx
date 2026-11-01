@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { Star, MapPin, Users, Maximize2, Heart, Sparkles } from "lucide-react";
 import { Studio } from "@/types";
 import { formatCurrency } from "@/lib/utils";
+import { useBookmarks } from "@/components/providers/BookmarkContext";
 
 interface StudioCardProps {
   studio: Studio;
@@ -14,7 +15,7 @@ interface StudioCardProps {
 }
 
 export function StudioCard({ studio, priority = false }: StudioCardProps) {
-  const [isLiked, setIsLiked] = useState(false);
+  const { isBookmarked, toggleBookmark } = useBookmarks();
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   const images = studio.images && studio.images.length > 0
@@ -22,6 +23,7 @@ export function StudioCard({ studio, priority = false }: StudioCardProps) {
     : ["https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=800&q=80"];
 
   const studioId = studio._id || studio.id || studio.slug;
+  const bookmarked = isBookmarked(studioId);
 
   return (
     <motion.div
@@ -53,14 +55,15 @@ export function StudioCard({ studio, priority = false }: StudioCardProps) {
             type="button"
             onClick={(e) => {
               e.preventDefault();
-              setIsLiked(!isLiked);
+              e.stopPropagation();
+              toggleBookmark(studio);
             }}
             className="pointer-events-auto p-2 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-md text-white transition-all hover:scale-110"
-            aria-label="Save studio"
+            aria-label={bookmarked ? "Remove bookmark" : "Bookmark studio"}
           >
             <Heart
               className={`h-4 w-4 transition-colors ${
-                isLiked ? "fill-orange-brand text-orange-brand" : "text-white"
+                bookmarked ? "fill-orange-brand text-orange-brand" : "text-white"
               }`}
             />
           </button>
