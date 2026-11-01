@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
@@ -23,8 +23,13 @@ export const metadata: Metadata = {
   description:
     "Discover and book premium daylight photo lofts, Dolby Atmos audio suites, virtual film soundstages, and dance rehearsal studios.",
   manifest: "/manifest.json",
+};
+
+export const viewport: Viewport = {
   themeColor: "#171717",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=5",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({
