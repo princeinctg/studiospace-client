@@ -141,6 +141,138 @@ const fallbackFeatured: Studio[] = [
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
+  {
+    _id: "demo-5",
+    title: "The Grand Cinematic Photography Atelier",
+    slug: "the-grand-cinematic-photography-atelier",
+    description: "Sun-drenched 3,200 sq.ft historic Chelsea atelier with 18-foot ceiling skylights, motorized overhead grid, styling vanity lounges, and Profoto Pro-11 packs.",
+    category: "photography",
+    amenities: ["Skylight Daylight", "Motor Rigging Grid", "VIP Styling Suite", "Digital Capture Station"],
+    pricePerHour: 450,
+    defaultBookingDuration: 8,
+    location: {
+      address: "540 W 28th St",
+      city: "Manhattan",
+      country: "United States",
+    },
+    images: [
+      "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=800&q=80",
+    ],
+    host: {
+      _id: "host-1",
+      name: "Imdatul Hoque",
+      email: "host@studiospace.com",
+    },
+    rating: 5.0,
+    reviewCount: 42,
+    capacity: 30,
+    squareFeet: 3200,
+    isAvailable: true,
+    featured: true,
+    tags: ["Photography", "Fashion", "Editorial"],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    _id: "demo-6",
+    title: "Obsidian Mastering & Recording House",
+    slug: "obsidian-mastering-recording-house",
+    description: "Northward-designed custom-floated mastering and tracking suite equipped with ATC SCM110ASL monitoring and Shadow Hills mastering compressor.",
+    category: "recording",
+    amenities: ["ATC SCM110 Monitoring", "Analog Mastering Rack", "Shadow Hills Compressor", "Custom Acoustic Float"],
+    pricePerHour: 380,
+    defaultBookingDuration: 8,
+    location: {
+      address: "2200 NW 2nd Ave",
+      city: "Miami",
+      country: "United States",
+    },
+    images: [
+      "https://images.unsplash.com/photo-1598653222000-6b7b7a552625?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1520523839898-5071282543e2?auto=format&fit=crop&w=800&q=80",
+    ],
+    host: {
+      _id: "host-1",
+      name: "Imdatul Hoque",
+      email: "host@studiospace.com",
+    },
+    rating: 4.9,
+    reviewCount: 38,
+    capacity: 15,
+    squareFeet: 1800,
+    isAvailable: true,
+    featured: true,
+    tags: ["Recording", "Mastering", "Dolby Atmos"],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    _id: "demo-7",
+    title: "Infinity Virtual Production Arena",
+    slug: "infinity-virtual-production-arena",
+    description: "Monumental 6,500 sq.ft stage with 270-degree LED volume wall driven by Unreal Engine 5 nDisplay and drive-in semi loading access.",
+    category: "film",
+    amenities: ["270-deg LED Volume", "Unreal Engine 5 nDisplay", "OptiTrack Mocap", "Drive-in Loading Bay"],
+    pricePerHour: 850,
+    defaultBookingDuration: 12,
+    location: {
+      address: "3700 S Las Vegas Blvd",
+      city: "Las Vegas",
+      country: "United States",
+    },
+    images: [
+      "https://images.unsplash.com/photo-1601506521937-0121a7fc2a6b?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=800&q=80",
+    ],
+    host: {
+      _id: "host-1",
+      name: "Imdatul Hoque",
+      email: "host@studiospace.com",
+    },
+    rating: 5.0,
+    reviewCount: 57,
+    capacity: 60,
+    squareFeet: 6500,
+    isAvailable: true,
+    featured: true,
+    tags: ["Film Production", "Virtual Stage", "Cinema"],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    _id: "demo-8",
+    title: "The Executive Podcast & Broadcast Lounge",
+    slug: "the-executive-podcast-broadcast-lounge",
+    description: "Panoramic skyline-view broadcast lounge featuring 5x Sony FX6 cinema cameras, sound-damped walnut slat architecture, and 10Gbps fiber uplink.",
+    category: "podcast",
+    amenities: ["5x Sony FX6 Cameras", "10Gbps Fiber Uplink", "Sound-Damped Lounge", "Shure SM7B Microphones"],
+    pricePerHour: 250,
+    defaultBookingDuration: 8,
+    location: {
+      address: "450 Mission St",
+      city: "San Francisco",
+      country: "United States",
+    },
+    images: [
+      "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1578382171692-304e0ec89c34?auto=format&fit=crop&w=800&q=80",
+    ],
+    host: {
+      _id: "host-1",
+      name: "Imdatul Hoque",
+      email: "host@studiospace.com",
+    },
+    rating: 4.9,
+    reviewCount: 45,
+    capacity: 10,
+    squareFeet: 1100,
+    isAvailable: true,
+    featured: true,
+    tags: ["Podcast", "Broadcast", "Live Streaming"],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
 ];
 
 export function FeaturedStudios() {
@@ -164,7 +296,7 @@ export function FeaturedStudios() {
           if (Array.isArray(raw) && raw.length > 0) {
             const normalized = raw.map(normalizeStudio);
             const featuredOnly = normalized.filter((s: Studio) => s.featured);
-            list = featuredOnly.length > 0 ? featuredOnly : normalized.slice(0, 6);
+            list = featuredOnly.length > 0 ? featuredOnly : normalized.slice(0, 8);
           }
         }
 
@@ -194,7 +326,7 @@ export function FeaturedStudios() {
               Featured Creative Studios
             </h2>
             <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-              Handpicked daylight spaces, soundproofed recording suites, and LED production stages rated 4.9+ by top creative teams.
+              Handpicked daylight spaces, soundproofed recording suites, virtual production LED arenas, and broadcast podcast studios rated 4.9+ by top creative teams.
             </p>
           </div>
 
@@ -211,21 +343,21 @@ export function FeaturedStudios() {
         {/* Studio Cards Grid with Staggered Entrance */}
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[1, 2, 3, 4].map((n) => (
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
               <div key={n} className="h-80 rounded-2xl bg-card border border-border animate-pulse" />
             ))}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {studios.slice(0, 4).map((studio, idx) => (
+            {studios.slice(0, 8).map((studio, idx) => (
               <motion.div
                 key={studio._id || studio.id || idx}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                transition={{ duration: 0.5, delay: idx * 0.08 }}
               >
-                <StudioCard studio={studio} priority={idx < 2} />
+                <StudioCard studio={studio} priority={idx < 4} />
               </motion.div>
             ))}
           </div>

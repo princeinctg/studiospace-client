@@ -130,8 +130,20 @@ export function normalizeStudio(raw: unknown): Studio {
   } else if (lowerTitle.includes("apex virtual") || lowerTitle.includes("led soundstage")) {
     pricePerHour = 650;
     defaultBookingDuration = 12;
-  } else if (lowerTitle.includes("velvet frequency") || lowerTitle.includes("podcast")) {
+  } else if (lowerTitle.includes("velvet frequency") || (lowerTitle.includes("podcast") && !lowerTitle.includes("executive"))) {
     pricePerHour = 200;
+    defaultBookingDuration = 8;
+  } else if (lowerTitle.includes("grand cinematic") || lowerTitle.includes("photography atelier")) {
+    pricePerHour = 450;
+    defaultBookingDuration = 8;
+  } else if (lowerTitle.includes("obsidian mastering") || lowerTitle.includes("recording house")) {
+    pricePerHour = 380;
+    defaultBookingDuration = 8;
+  } else if (lowerTitle.includes("infinity virtual") || lowerTitle.includes("production arena")) {
+    pricePerHour = 850;
+    defaultBookingDuration = 12;
+  } else if (lowerTitle.includes("executive podcast") || lowerTitle.includes("broadcast lounge")) {
+    pricePerHour = 250;
     defaultBookingDuration = 8;
   } else if (typeof item.defaultBookingDuration === "number" && item.defaultBookingDuration > 0) {
     defaultBookingDuration = item.defaultBookingDuration;

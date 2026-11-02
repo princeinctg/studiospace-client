@@ -3,7 +3,7 @@
   publish = ".next"
 
 [build.environment]
-  NEXT_PUBLIC_API_URL = "https://studiospace-api.netlify.app/api"
+  NEXT_PUBLIC_API_URL = "https://studiospace-server.onrender.com/api"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
