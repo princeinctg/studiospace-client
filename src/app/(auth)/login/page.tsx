@@ -12,7 +12,7 @@ import { GoogleLogo } from "@/components/ui/GoogleLogo";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, initiateGoogleLogin } = useAuth();
+  const { login } = useAuth();
   const { toast } = useToast();
 
   const [email, setEmail] = useState("");
@@ -49,7 +49,11 @@ export default function LoginPage() {
   };
 
   const handleGoogleAuth = () => {
-    initiateGoogleLogin();
+    toast(
+      "info",
+      "Temporarily Disabled",
+      "Google Sign-In is temporarily disabled for maintenance. Please use Email/Password or Demo login."
+    );
   };
 
   return (
@@ -141,11 +145,16 @@ export default function LoginPage() {
 
           <button
             type="button"
+            disabled
             onClick={handleGoogleAuth}
-            className="w-full py-3 px-4 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 text-xs text-white font-semibold flex items-center justify-center gap-2.5 transition-all hover:border-orange-brand/50 shadow-sm"
+            className="w-full py-3 px-4 rounded-xl border border-white/10 bg-white/5 text-xs text-neutral-400 font-semibold flex items-center justify-center gap-2.5 cursor-not-allowed opacity-60 shadow-sm transition-all"
+            title="Google Sign-In is temporarily disabled for maintenance"
           >
-            <GoogleLogo className="h-4 w-4 shrink-0" />
+            <GoogleLogo className="h-4 w-4 shrink-0 grayscale opacity-60" />
             <span>Continue with Google</span>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-neutral-400 font-normal">
+              Temporarily Disabled
+            </span>
           </button>
 
           <div className="grid grid-cols-2 gap-2 pt-1">

@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { User, UserRole } from "@/types";
-import { apiRequest, API_BASE_URL } from "@/lib/api";
+import { apiRequest } from "@/lib/api";
 
 interface RawUserResponse {
   _id?: string;
@@ -341,7 +341,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const initiateGoogleLogin = () => {
-    window.location.href = `${API_BASE_URL}/auth/google`;
+    // Temporarily disabled to prevent OAuth errors
+    console.warn("[Auth] Google Sign-In is temporarily disabled for maintenance.");
   };
 
   const googleLogin = async (email?: string, name?: string) => {
