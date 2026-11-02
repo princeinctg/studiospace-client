@@ -44,7 +44,7 @@ const fallbackStudiosMap: Record<string, Studio> = {
     ],
     host: {
       _id: "host-1",
-      name: "Alex Vance",
+      name: "Imdatul Hoque",
       email: "host@studiospace.com",
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
       bio: "Commercial director and studio curator based in Brooklyn, NY. Passionate about providing film and photography creators with top-tier gear.",

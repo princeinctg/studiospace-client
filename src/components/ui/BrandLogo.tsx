@@ -27,7 +27,7 @@ export function BrandLogo({
   className = "",
   imageClassName = "",
   priority = false,
-  alt = "StudioSpace — Find, Book, Create",
+  alt = "StudioSpace",
   href = "/",
 }: BrandLogoProps) {
   let containerClasses = "";
@@ -38,29 +38,29 @@ export function BrandLogo({
   switch (variant) {
     case "navbar":
       containerClasses =
-        "relative flex items-center justify-center p-1 sm:p-1.5 rounded-xl bg-charcoal/90 dark:bg-transparent border border-white/10 dark:border-transparent group-hover:border-orange-brand/40 transition-all duration-300";
+        "relative flex items-center justify-center p-1 rounded-xl transition-all duration-300";
       imgClasses =
-        "h-9 sm:h-10 md:h-11 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)]";
+        "h-8 sm:h-9 md:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-[0_2px_8px_rgba(0,0,0,0.25)]";
       break;
 
     case "compact":
       containerClasses =
-        "relative flex items-center justify-center p-1 rounded-lg bg-charcoal/80 dark:bg-transparent border border-white/10 dark:border-transparent";
-      imgClasses = "h-8 sm:h-9 w-auto object-contain";
+        "relative flex items-center justify-center p-1 rounded-lg";
+      imgClasses = "h-7 sm:h-8 w-auto object-contain";
       break;
 
     case "footer":
       containerClasses =
-        "relative inline-flex items-center justify-start p-1.5 sm:p-2 rounded-2xl bg-black/40 border border-white/10 group-hover:border-orange-brand/40 transition-all duration-300";
+        "relative inline-flex items-center justify-start transition-all duration-300";
       imgClasses =
-        "h-11 sm:h-12 md:h-14 w-auto object-contain drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)] transition-transform duration-300 group-hover:scale-105";
+        "h-10 sm:h-12 md:h-14 w-auto object-contain drop-shadow-[0_4px_12px_rgba(0,0,0,0.3)] transition-transform duration-300 group-hover:scale-105";
       break;
 
     case "auth":
       containerClasses =
-        "relative w-48 h-32 sm:w-56 sm:h-36 mx-auto overflow-hidden rounded-2xl border border-white/10 bg-black/60 shadow-glow flex items-center justify-center p-2 backdrop-blur-md";
+        "relative w-44 h-28 sm:w-52 sm:h-32 mx-auto flex items-center justify-center p-1";
       imgClasses =
-        "w-full h-full object-contain transition-transform duration-300 group-hover:scale-105";
+        "w-full h-full object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-[0_4px_16px_rgba(0,0,0,0.4)]";
       break;
 
     case "custom":

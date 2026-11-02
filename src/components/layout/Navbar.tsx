@@ -230,7 +230,7 @@ export function Navbar() {
               <div className="flex items-center justify-between pb-3 border-b border-border/60 mb-1">
                 <BrandLogo variant="compact" href="/" />
                 <span className="text-[10px] font-semibold uppercase tracking-wider text-gold">
-                  Find • Book • Create
+                  Creative Marketplace
                 </span>
               </div>
               {navLinks.map((link) => (

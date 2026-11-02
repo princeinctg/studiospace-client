@@ -28,7 +28,7 @@ const fallbackFeatured: Studio[] = [
     ],
     host: {
       _id: "host-1",
-      name: "Alex Vance",
+      name: "Imdatul Hoque",
       email: "host@studiospace.com",
     },
     rating: 4.96,
@@ -60,7 +60,7 @@ const fallbackFeatured: Studio[] = [
     ],
     host: {
       _id: "host-1",
-      name: "Alex Vance",
+      name: "Imdatul Hoque",
       email: "host@studiospace.com",
     },
     rating: 4.98,
@@ -92,7 +92,7 @@ const fallbackFeatured: Studio[] = [
     ],
     host: {
       _id: "host-1",
-      name: "Alex Vance",
+      name: "Imdatul Hoque",
       email: "host@studiospace.com",
     },
     rating: 4.92,
@@ -124,7 +124,7 @@ const fallbackFeatured: Studio[] = [
     ],
     host: {
       _id: "host-1",
-      name: "Alex Vance",
+      name: "Imdatul Hoque",
       email: "host@studiospace.com",
     },
     rating: 4.95,

@@ -51,7 +51,7 @@ export default function MyListingsPage() {
           pricePerHour: 125,
           location: { address: "420 DUMBO Waterfront Ave", city: "Brooklyn", country: "United States" },
           images: ["https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=800&q=80"],
-          host: { _id: "host-1", name: "Alex Vance", email: "host@studiospace.com" },
+          host: { _id: "host-1", name: "Imdatul Hoque", email: "host@studiospace.com" },
           rating: 4.96,
           reviewCount: 48,
           capacity: 25,

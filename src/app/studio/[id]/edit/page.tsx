@@ -48,7 +48,7 @@ export default function EditStudioPage() {
           squareFeet: 2400,
           location: { address: "420 DUMBO Waterfront Ave", city: "Brooklyn", country: "United States" },
           images: ["https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1200&q=85"],
-          host: { _id: "host-1", name: "Alex Vance", email: "host@studiospace.com" },
+          host: { _id: "host-1", name: "Imdatul Hoque", email: "host@studiospace.com" },
           rating: 4.96,
           reviewCount: 48,
           isAvailable: true,
