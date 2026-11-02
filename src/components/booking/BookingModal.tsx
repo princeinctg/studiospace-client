@@ -155,34 +155,23 @@ export function BookingModal({ studio, isOpen, onClose }: BookingModalProps) {
       }
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : String(err);
-      if (errorMsg.includes("conflict") || errorMsg.includes("409")) {
+      const isConflict =
+        errorMsg.toLowerCase().includes("conflict") ||
+        errorMsg.includes("409") ||
+        errorMsg.toLowerCase().includes("already reserved") ||
+        errorMsg.toLowerCase().includes("double-booking");
+
+      if (isConflict) {
         setConflictError(
           "Schedule Conflict: This studio is already reserved during the requested time slot. Please choose another window."
         );
-      } else {
-        // Fallback demo booking strictly pending and unpaid
-        const mockBooking: Booking = {
-          _id: "mock-" + Date.now(),
-          guest: "Current User",
-          studio,
-          date,
-          startTime,
-          endTime,
-          durationHours,
-          totalPrice,
-          status: "pending",
-          paymentStatus: "unpaid",
-          guestCount,
-          notes,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-        setConfirmedBooking(mockBooking);
         toast(
-          "success",
-          "Reservation Request Submitted!",
-          "Booking recorded in pending status for host approval."
+          "error",
+          "Slot Unavailable",
+          "This studio is already reserved for that time window. Please select an alternate date or time."
         );
+      } else {
+        toast("error", "Booking Failed", errorMsg || "Failed to process booking request. Please try again.");
       }
     } finally {
       setLoading(false);
