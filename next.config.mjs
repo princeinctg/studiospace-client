@@ -17,6 +17,28 @@ const nextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: "https://studiospace-server.onrender.com/api/:path*",
+      },
+    ];
+  },
+  async redirects() {
+    return [
+      {
+        source: "/my-bookings",
+        destination: "/dashboard/my-bookings",
+        permanent: true,
+      },
+      {
+        source: "/my-listings",
+        destination: "/dashboard/my-listings",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
