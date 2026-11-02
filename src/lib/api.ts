@@ -1,13 +1,10 @@
 import { Studio, StudioCategory } from "@/types";
 
-const rawBaseUrl =
-  process.env.NEXT_PUBLIC_API_URL ||
-  (typeof window !== "undefined" &&
-  (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-    ? "http://localhost:5000/api"
-    : "https://studiospace-server.onrender.com/api");
+const PRODUCTION_API_URL = "https://studiospace-server-f9ek.onrender.com/api";
 
-const API_BASE_URL = rawBaseUrl.replace(/\/+$/, "");
+export const API_BASE_URL = (
+  process.env.NEXT_PUBLIC_API_URL || PRODUCTION_API_URL
+).replace(/\/+$/, "");
 
 function getToken(): string | null {
   if (typeof window === "undefined") return null;

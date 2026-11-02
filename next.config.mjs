@@ -21,7 +21,7 @@ const nextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "https://studiospace-server.onrender.com/api/:path*",
+        destination: "https://studiospace-server-f9ek.onrender.com/api/:path*",
       },
     ];
   },
@@ -30,11 +30,6 @@ const nextConfig = {
       {
         source: "/my-bookings",
         destination: "/dashboard/my-bookings",
-        permanent: true,
-      },
-      {
-        source: "/my-listings",
-        destination: "/dashboard/my-listings",
         permanent: true,
       },
     ];

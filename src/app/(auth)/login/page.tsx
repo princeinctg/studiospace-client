@@ -4,10 +4,11 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Mail, Lock, Sparkles, ArrowRight, ShieldCheck, UserCheck } from "lucide-react";
+import { Mail, Lock, ArrowRight, ShieldCheck, UserCheck } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthContext";
 import { useToast } from "@/components/providers/ToastProvider";
 import { BrandLogo } from "@/components/ui/BrandLogo";
+import { GoogleLogo } from "@/components/ui/GoogleLogo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -141,9 +142,9 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={handleGoogleAuth}
-            className="w-full py-2.5 px-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-xs text-white font-medium flex items-center justify-center gap-2 transition-colors hover:border-orange-brand/50"
+            className="w-full py-3 px-4 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 text-xs text-white font-semibold flex items-center justify-center gap-2.5 transition-all hover:border-orange-brand/50 shadow-sm"
           >
-            <Sparkles className="h-4 w-4 text-gold" />
+            <GoogleLogo className="h-4 w-4 shrink-0" />
             <span>Continue with Google</span>
           </button>
 
@@ -169,9 +170,9 @@ export default function LoginPage() {
 
         {/* Footer Link */}
         <div className="text-center text-xs text-neutral-400 border-t border-white/10 pt-4">
-          Need an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link href="/register" className="text-orange-brand font-semibold hover:underline">
-            Register Here
+            Sign up
           </Link>
         </div>
 

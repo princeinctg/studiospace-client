@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { User, UserRole } from "@/types";
-import { apiRequest } from "@/lib/api";
+import { apiRequest, API_BASE_URL } from "@/lib/api";
 
 interface RawUserResponse {
   _id?: string;
@@ -14,6 +14,7 @@ interface RawUserResponse {
   avatar?: string;
   phone?: string;
   createdAt?: string;
+  isDemo?: boolean;
 }
 
 interface RawAuthResponse extends RawUserResponse {
@@ -22,16 +23,71 @@ interface RawAuthResponse extends RawUserResponse {
   user?: RawUserResponse;
 }
 
+export const PREDEFINED_DEMO_ACCOUNTS: Record<string, { user: User; password: string }> = {
+  "host@studiospace.com": {
+    user: {
+      id: "demo-host-1",
+      name: "Imdatul Hoque (Host Demo)",
+      email: "host@studiospace.com",
+      role: "host",
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      phone: "+1 (555) 019-2834",
+      isDemo: true,
+    },
+    password: "HostPassword123!",
+  },
+  "guest@studiospace.com": {
+    user: {
+      id: "demo-guest-1",
+      name: "Imrita Aksa (Guest Demo)",
+      email: "guest@studiospace.com",
+      role: "guest",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+      phone: "+1 (555) 018-9271",
+      isDemo: true,
+    },
+    password: "GuestPassword123!",
+  },
+};
+
+interface StoredDemoAccount {
+  user: User;
+  password: string;
+}
+
+function getStoredDemoAccounts(): Record<string, StoredDemoAccount> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem("studiospace_demo_accounts");
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveStoredDemoAccount(user: User, password: string) {
+  if (typeof window === "undefined") return;
+  try {
+    const accounts = getStoredDemoAccounts();
+    accounts[user.email.toLowerCase()] = { user, password };
+    localStorage.setItem("studiospace_demo_accounts", JSON.stringify(accounts));
+  } catch {
+    // Ignore localStorage write errors
+  }
+}
+
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string, role?: UserRole, avatar?: string) => Promise<void>;
+  loginDemo: (role: "host" | "guest") => Promise<void>;
   googleLogin: (email?: string, name?: string) => Promise<void>;
   initiateGoogleLogin: () => void;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
   isHost: boolean;
+  isDemoMode: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -49,38 +105,70 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       avatar: raw?.photoURL || raw?.avatar || "",
       phone: raw?.phone || "",
       createdAt: raw?.createdAt,
+      isDemo: Boolean(raw?.isDemo),
     };
   };
 
+  const authenticateDemoSession = (demoUser: User) => {
+    const demoToken = "demo-token-" + Date.now();
+    localStorage.setItem("studiospace_token", demoToken);
+    localStorage.setItem("studiospace_user", JSON.stringify(demoUser));
+    localStorage.setItem("studiospace_auth_mode", "demo");
+    setUser(demoUser);
+  };
+
   const fetchSession = useCallback(async () => {
-    // 1. Check if returning from Google OAuth redirect with token in query params
-    if (typeof window !== "undefined") {
-      const urlParams = new URLSearchParams(window.location.search);
-      const urlToken = urlParams.get("auth_token");
-      if (urlToken) {
-        localStorage.setItem("studiospace_token", urlToken);
-        const cleanUrl = window.location.pathname;
-        window.history.replaceState({}, document.title, cleanUrl);
-      }
+    if (typeof window === "undefined") {
+      setLoading(false);
+      return;
     }
 
-    // 2. Query /auth/me with credentials: "include"
-    try {
-      const data = await apiRequest<RawAuthResponse>("/auth/me");
-      const rawUser = data?.user || (data?.email ? data : null);
-      if (rawUser) {
-        const u = normalizeUser(rawUser);
-        setUser(u);
-        localStorage.setItem("studiospace_user", JSON.stringify(u));
+    // 1. Check if returning from Google OAuth redirect with token in query params
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlToken = urlParams.get("auth_token") || urlParams.get("token");
+    if (urlToken) {
+      localStorage.setItem("studiospace_token", urlToken);
+      localStorage.setItem("studiospace_auth_mode", "production");
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+    }
+
+    const token = localStorage.getItem("studiospace_token");
+    const authMode = localStorage.getItem("studiospace_auth_mode");
+
+    // 2. Demo Mode persistence: Skip /auth/me call to stay independent of MongoDB
+    if (token?.startsWith("demo-token-") || authMode === "demo") {
+      const cached = localStorage.getItem("studiospace_user");
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          setUser({ ...parsed, isDemo: true });
+        } catch {
+          setUser(null);
+        }
       } else {
         setUser(null);
-        localStorage.removeItem("studiospace_token");
-        localStorage.removeItem("studiospace_user");
       }
-    } catch {
-      // Offline fallback: check cached user if token exists
-      const token = typeof window !== "undefined" ? localStorage.getItem("studiospace_token") : null;
-      if (token) {
+      setLoading(false);
+      return;
+    }
+
+    // 3. Production Mode: Query /auth/me with credentials: "include"
+    if (token) {
+      try {
+        const data = await apiRequest<RawAuthResponse>("/auth/me");
+        const rawUser = data?.user || (data?.email ? data : null);
+        if (rawUser) {
+          const u = normalizeUser(rawUser);
+          setUser(u);
+          localStorage.setItem("studiospace_user", JSON.stringify(u));
+        } else {
+          setUser(null);
+          localStorage.removeItem("studiospace_token");
+          localStorage.removeItem("studiospace_user");
+        }
+      } catch {
+        // Fallback: If network or DB is temporarily down, restore from cached session
         const cached = localStorage.getItem("studiospace_user");
         if (cached) {
           try {
@@ -91,35 +179,95 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } else {
           setUser(null);
         }
-      } else {
-        setUser(null);
       }
-    } finally {
-      setLoading(false);
+    } else {
+      setUser(null);
     }
+
+    setLoading(false);
   }, []);
 
   useEffect(() => {
     fetchSession();
   }, [fetchSession]);
 
+  const loginDemo = async (role: "host" | "guest") => {
+    const account = role === "host" ? PREDEFINED_DEMO_ACCOUNTS["host@studiospace.com"] : PREDEFINED_DEMO_ACCOUNTS["guest@studiospace.com"];
+    authenticateDemoSession(account.user);
+  };
+
   const login = async (email: string, password: string) => {
-    const data = await apiRequest<RawAuthResponse>("/auth/login", {
-      method: "POST",
-      body: JSON.stringify({ email, password }),
-    });
+    const cleanEmail = email.toLowerCase().trim();
 
-    if (data?.token) {
-      localStorage.setItem("studiospace_token", data.token);
-    }
+    // Try production API first
+    try {
+      const data = await apiRequest<RawAuthResponse>("/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ email: cleanEmail, password }),
+      });
 
-    const rawUser = data?.user || (data?.email ? data : null);
-    if (rawUser) {
-      const u = normalizeUser(rawUser);
-      setUser(u);
-      localStorage.setItem("studiospace_user", JSON.stringify(u));
-    } else {
-      await fetchSession();
+      if (data?.token) {
+        localStorage.setItem("studiospace_token", data.token);
+        localStorage.setItem("studiospace_auth_mode", "production");
+      }
+
+      const rawUser = data?.user || (data?.email ? data : null);
+      if (rawUser) {
+        const u = normalizeUser(rawUser);
+        setUser(u);
+        localStorage.setItem("studiospace_user", JSON.stringify(u));
+      } else {
+        await fetchSession();
+      }
+      return;
+    } catch (err: unknown) {
+      const errorMsg = (err instanceof Error ? err.message : String(err || "")).toLowerCase();
+
+      // If database is unavailable or unreachable, seamlessly activate Demo Mode
+      const isDatabaseIssue =
+        errorMsg.includes("database service unavailable") ||
+        errorMsg.includes("service unavailable") ||
+        errorMsg.includes("failed to fetch") ||
+        errorMsg.includes("connection refused") ||
+        errorMsg.includes("network error");
+
+      // Check Predefined Demo Accounts
+      const predefined = PREDEFINED_DEMO_ACCOUNTS[cleanEmail];
+      if (predefined) {
+        if (predefined.password === password || isDatabaseIssue) {
+          authenticateDemoSession(predefined.user);
+          return;
+        }
+        throw new Error("Invalid password for demo account.");
+      }
+
+      // Check Locally Stored Demo Accounts
+      const stored = getStoredDemoAccounts()[cleanEmail];
+      if (stored) {
+        if (stored.password === password || isDatabaseIssue) {
+          authenticateDemoSession(stored.user);
+          return;
+        }
+        throw new Error("Invalid password for local demo account.");
+      }
+
+      // If database is unavailable and not matching demo accounts, allow on-the-fly demo login
+      if (isDatabaseIssue) {
+        const onTheFlyUser: User = {
+          id: "demo-user-" + Date.now(),
+          name: cleanEmail.split("@")[0].replace(/[._-]/g, " "),
+          email: cleanEmail,
+          role: cleanEmail.includes("host") ? "host" : "guest",
+          avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+          phone: "+1 (555) 019-2834",
+          isDemo: true,
+        };
+        saveStoredDemoAccount(onTheFlyUser, password);
+        authenticateDemoSession(onTheFlyUser);
+        return;
+      }
+
+      throw err;
     }
   };
 
@@ -130,42 +278,70 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     role: UserRole = "guest",
     avatar?: string
   ) => {
-    const data = await apiRequest<RawAuthResponse>("/auth/register", {
-      method: "POST",
-      body: JSON.stringify({
-        name,
-        email,
-        password,
-        role,
-        avatar: avatar || "",
-        photoURL: avatar || "",
-      }),
-    });
+    const cleanEmail = email.toLowerCase().trim();
 
-    if (data?.token) {
-      localStorage.setItem("studiospace_token", data.token);
-    }
+    // Try production API first
+    try {
+      const data = await apiRequest<RawAuthResponse>("/auth/register", {
+        method: "POST",
+        body: JSON.stringify({
+          name: name.trim(),
+          email: cleanEmail,
+          password,
+          role,
+          avatar: avatar || "",
+          photoURL: avatar || "",
+        }),
+      });
 
-    const rawUser = data?.user || (data?.email ? data : null);
-    if (rawUser) {
-      const u = normalizeUser(rawUser);
-      setUser(u);
-      localStorage.setItem("studiospace_user", JSON.stringify(u));
-    } else {
-      // Auto login to obtain HTTPOnly cookie & user profile
-      await login(email, password);
+      if (data?.token) {
+        localStorage.setItem("studiospace_token", data.token);
+        localStorage.setItem("studiospace_auth_mode", "production");
+      }
+
+      const rawUser = data?.user || (data?.email ? data : null);
+      if (rawUser) {
+        const u = normalizeUser(rawUser);
+        setUser(u);
+        localStorage.setItem("studiospace_user", JSON.stringify(u));
+      } else {
+        await login(cleanEmail, password);
+      }
+      return;
+    } catch (err: unknown) {
+      const errorMsg = (err instanceof Error ? err.message : String(err || "")).toLowerCase();
+
+      // If database is unavailable or unreachable, seamlessly activate Demo Mode
+      const isDatabaseIssue =
+        errorMsg.includes("database service unavailable") ||
+        errorMsg.includes("service unavailable") ||
+        errorMsg.includes("failed to fetch") ||
+        errorMsg.includes("connection refused") ||
+        errorMsg.includes("network error");
+
+      if (isDatabaseIssue) {
+        const demoUser: User = {
+          id: "demo-user-" + Date.now(),
+          name: name.trim() || "Creative Producer",
+          email: cleanEmail,
+          role: role || "guest",
+          avatar:
+            avatar ||
+            "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+          phone: "",
+          isDemo: true,
+        };
+        saveStoredDemoAccount(demoUser, password);
+        authenticateDemoSession(demoUser);
+        return;
+      }
+
+      throw err;
     }
   };
 
   const initiateGoogleLogin = () => {
-    const rawBaseUrl =
-      process.env.NEXT_PUBLIC_API_URL ||
-      (typeof window !== "undefined" &&
-      (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-        ? "http://localhost:5000/api"
-        : "https://studiospace-server.onrender.com/api");
-    const cleanUrl = rawBaseUrl.replace(/\/+$/, "");
-    window.location.href = `${cleanUrl}/auth/google`;
+    window.location.href = `${API_BASE_URL}/auth/google`;
   };
 
   const googleLogin = async (email?: string, name?: string) => {
@@ -185,6 +361,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (data?.token) {
       localStorage.setItem("studiospace_token", data.token);
+      localStorage.setItem("studiospace_auth_mode", "production");
     }
 
     const rawUser = data?.user || (data?.email ? data : null);
@@ -198,13 +375,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
-    try {
-      await apiRequest("/auth/logout", { method: "POST" });
-    } catch {
-      // Graceful
+    const authMode = localStorage.getItem("studiospace_auth_mode");
+    if (authMode !== "demo") {
+      try {
+        await apiRequest("/auth/logout", { method: "POST" });
+      } catch {
+        // Graceful
+      }
     }
     localStorage.removeItem("studiospace_token");
     localStorage.removeItem("studiospace_user");
+    localStorage.removeItem("studiospace_auth_mode");
     setUser(null);
   };
 
@@ -215,11 +396,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         loading,
         login,
         register,
+        loginDemo,
         googleLogin,
         initiateGoogleLogin,
         logout,
         isAuthenticated: !!user,
         isHost: user?.role === "host" || user?.role === "admin",
+        isDemoMode: Boolean(user?.isDemo),
       }}
     >
       {children}

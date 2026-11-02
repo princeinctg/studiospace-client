@@ -9,6 +9,7 @@ export interface User {
   phone?: string;
   bio?: string;
   createdAt?: string;
+  isDemo?: boolean;
 }
 
 export type StudioCategory =
@@ -39,6 +40,7 @@ export interface Studio {
   category: StudioCategory;
   amenities: string[];
   pricePerHour: number;
+  securityDeposit?: number;
   location: StudioLocation;
   images: string[];
   host: {

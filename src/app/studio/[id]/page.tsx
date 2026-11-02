@@ -464,13 +464,31 @@ export default function StudioDetailPage() {
         const rawStudio = (data?.studio as Record<string, unknown>) || data;
         if (rawStudio && (rawStudio._id || rawStudio.title)) {
           setStudio(normalizeStudio(rawStudio));
+          setLoading(false);
+          return;
         }
       } catch {
-        // Fallback to demo
-        setStudio(fallbackStudiosMap[idOrSlug] || fallbackStudiosMap["the-industrial-daylight-loft"]);
-      } finally {
-        setLoading(false);
+        // Fallback to local / demo checks
       }
+
+      // Check localStorage for newly created studios
+      try {
+        const local = JSON.parse(localStorage.getItem("studiospace_demo_studios") || "[]");
+        const found = local.find(
+          (s: { _id?: string; id?: string; slug?: string }) =>
+            s._id === idOrSlug || s.id === idOrSlug || s.slug === idOrSlug
+        );
+        if (found) {
+          setStudio(normalizeStudio(found));
+          setLoading(false);
+          return;
+        }
+      } catch {
+        // Ignore localStorage error
+      }
+
+      setStudio(fallbackStudiosMap[idOrSlug] || fallbackStudiosMap["the-industrial-daylight-loft"]);
+      setLoading(false);
     }
 
     fetchStudio();
@@ -719,7 +737,7 @@ export default function StudioDetailPage() {
                   className="w-full py-3.5 px-6 rounded-2xl bg-orange-brand hover:bg-orange-hover text-white font-bold text-sm shadow-glow transition-all hover:scale-[1.02] flex items-center justify-center gap-2"
                 >
                   <Calendar className="h-4 w-4" />
-                  <span>Reserve Studio Time</span>
+                  <span>Book Workspace Now</span>
                 </button>
 
                 <div className="p-3 rounded-xl bg-forest/15 border border-forest/30 text-[11px] text-emerald-300 flex items-start gap-2">

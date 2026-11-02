@@ -121,7 +121,7 @@ export function Footer() {
             <div className="flex items-center gap-3 text-neutral-400">
               {/* Modern X Logo (formerly Twitter) */}
               <a
-                href="https://x.com"
+                href="https://x.com/mdiftiarafprin1"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="X (formerly Twitter)"
@@ -132,7 +132,7 @@ export function Footer() {
                 </svg>
               </a>
               <a
-                href="https://github.com"
+                href="https://github.com/princeinctg"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="GitHub"

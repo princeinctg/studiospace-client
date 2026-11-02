@@ -2,14 +2,16 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Plus, X, Sparkles } from "lucide-react";
+import { Plus, X, Sparkles, ShieldCheck, UserCheck } from "lucide-react";
 import { StudioCategory } from "@/types";
+import { useAuth } from "@/components/providers/AuthContext";
 
 export interface StudioFormData {
   title: string;
   description: string;
   category: StudioCategory;
   pricePerHour: number;
+  securityDeposit?: number;
   defaultBookingDuration?: number;
   capacity: number;
   squareFeet: number;
@@ -23,6 +25,9 @@ export interface StudioFormData {
   images: string[];
   tags: string[];
   rules: string[];
+  hostName?: string;
+  hostEmail?: string;
+  imageUrl?: string;
 }
 
 interface StudioFormProps {
@@ -55,11 +60,13 @@ const ALL_AMENITIES = [
 ];
 
 export function StudioForm({ initialData, onSubmit, isEditing = false }: StudioFormProps) {
+  const { user } = useAuth();
   const [formData, setFormData] = useState<StudioFormData>({
     title: initialData?.title || "",
     description: initialData?.description || "",
     category: initialData?.category || "photography",
     pricePerHour: initialData?.pricePerHour || 120,
+    securityDeposit: initialData?.securityDeposit ?? 150,
     defaultBookingDuration: initialData?.defaultBookingDuration || 8,
     capacity: initialData?.capacity || 15,
     squareFeet: initialData?.squareFeet || 1500,
@@ -115,6 +122,13 @@ export function StudioForm({ initialData, onSubmit, isEditing = false }: StudioF
     e.preventDefault();
     setErrorMsg("");
 
+    let currentImages = [...formData.images];
+    if (currentImages.length === 0 && imageUrlInput.trim()) {
+      currentImages = [imageUrlInput.trim()];
+      setFormData((prev) => ({ ...prev, images: [imageUrlInput.trim()] }));
+      setImageUrlInput("");
+    }
+
     const trimmedTitle = formData.title.trim();
     if (trimmedTitle.length < 5) {
       setErrorMsg("Studio title must be at least 5 characters.");
@@ -144,14 +158,50 @@ export function StudioForm({ initialData, onSubmit, isEditing = false }: StudioF
       return;
     }
 
-    if (formData.images.length === 0) {
-      setErrorMsg("Please provide at least one photo of your studio space.");
+    if ((formData.securityDeposit ?? 0) < 0) {
+      setErrorMsg("Security deposit cannot be negative.");
+      return;
+    }
+
+    if (formData.capacity < 1) {
+      setErrorMsg("Maximum capacity must be at least 1 person.");
+      return;
+    }
+
+    if (!formData.location.address.trim()) {
+      setErrorMsg("Studio location / street address is required.");
+      return;
+    }
+
+    if (!formData.location.city.trim()) {
+      setErrorMsg("Location city is required.");
+      return;
+    }
+
+    if (formData.description.trim().length < 20) {
+      setErrorMsg("Detailed overview must be at least 20 characters.");
+      return;
+    }
+
+    if (currentImages.length === 0) {
+      setErrorMsg("Please provide at least one image URL for your studio.");
+      return;
+    }
+
+    if (formData.amenities.length === 0) {
+      setErrorMsg("Please select at least one amenity or equipment item.");
       return;
     }
 
     setSubmitting(true);
     try {
-      await onSubmit(formData);
+      await onSubmit({
+        ...formData,
+        images: currentImages,
+        hostName: user?.name || "Verified Studio Host",
+        hostEmail: user?.email || "host@studiospace.com",
+        imageUrl: currentImages[0],
+      });
     } catch (err: unknown) {
       setErrorMsg(err instanceof Error ? err.message : "Failed to save studio listing.");
     } finally {
@@ -167,10 +217,55 @@ export function StudioForm({ initialData, onSubmit, isEditing = false }: StudioF
         </div>
       )}
 
+      {/* Host Identification (Read-only from active user) */}
+      <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <UserCheck className="h-4 w-4 text-orange-brand" />
+            <h3 className="font-display text-xl font-bold text-foreground">
+              Host Information
+            </h3>
+          </div>
+          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+            <ShieldCheck className="h-3 w-3" />
+            Verified Host Session
+          </span>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Your listing will automatically be published under your active host profile credentials.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              Host Name (Read-only)
+            </label>
+            <input
+              type="text"
+              readOnly
+              value={user?.name || "Verified Studio Host"}
+              className="w-full px-4 py-2.5 rounded-xl bg-secondary/50 border border-border text-xs text-muted-foreground cursor-not-allowed select-none"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              Host Email (Read-only)
+            </label>
+            <input
+              type="text"
+              readOnly
+              value={user?.email || "host@studiospace.com"}
+              className="w-full px-4 py-2.5 rounded-xl bg-secondary/50 border border-border text-xs text-muted-foreground cursor-not-allowed select-none"
+            />
+          </div>
+        </div>
+      </div>
+
       {/* Basic Info Card */}
       <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-5">
         <h3 className="font-display text-xl font-bold text-foreground">
-          Studio Overview & Discipline
+          Studio Overview & Category
         </h3>
 
         <div className="space-y-1.5">
@@ -187,7 +282,7 @@ export function StudioForm({ initialData, onSubmit, isEditing = false }: StudioF
           />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="space-y-1.5">
             <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
               Primary Category
@@ -220,18 +315,33 @@ export function StudioForm({ initialData, onSubmit, isEditing = false }: StudioF
               className="w-full px-4 py-2.5 rounded-xl bg-secondary border border-border text-sm text-foreground focus:outline-none focus:border-orange-brand"
             />
           </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              Security Deposit ($ USD)
+            </label>
+            <input
+              type="number"
+              min={0}
+              max={10000}
+              value={formData.securityDeposit ?? 0}
+              onChange={(e) => setFormData({ ...formData, securityDeposit: Number(e.target.value) })}
+              placeholder="0"
+              className="w-full px-4 py-2.5 rounded-xl bg-secondary border border-border text-sm text-foreground focus:outline-none focus:border-orange-brand"
+            />
+          </div>
         </div>
 
         <div className="space-y-1.5">
           <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            Detailed Description
+            Detailed Overview / Description
           </label>
           <textarea
             required
             rows={4}
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            placeholder="Describe the architectural lighting, power distro, acoustics, ceiling heights..."
+            placeholder="Describe the architectural lighting, power distro, acoustics, ceiling heights, access guidelines..."
             className="w-full px-4 py-2.5 rounded-xl bg-secondary border border-border text-xs text-foreground focus:outline-none focus:border-orange-brand"
           />
         </div>
@@ -239,7 +349,7 @@ export function StudioForm({ initialData, onSubmit, isEditing = false }: StudioF
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              Max Guests / Crew
+              Maximum Capacity (Guests/Crew)
             </label>
             <input
               type="number"
@@ -366,28 +476,33 @@ export function StudioForm({ initialData, onSubmit, isEditing = false }: StudioF
       {/* Images Section */}
       <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-4">
         <h3 className="font-display text-xl font-bold text-foreground">
-          Studio Photographs
+          Studio Photographs & Image URL
         </h3>
         <p className="text-xs text-muted-foreground">
-          Provide direct image URLs from Unsplash, Cloudinary, or host servers.
+          Enter direct image URLs from Unsplash, Cloudinary, or web hosting.
         </p>
 
-        <div className="flex gap-2">
-          <input
-            type="url"
-            value={imageUrlInput}
-            onChange={(e) => setImageUrlInput(e.target.value)}
-            placeholder="Paste image URL (https://images.unsplash.com/...)"
-            className="flex-1 px-4 py-2.5 rounded-xl bg-secondary border border-border text-xs text-foreground focus:outline-none focus:border-orange-brand"
-          />
-          <button
-            type="button"
-            onClick={handleAddImage}
-            className="px-4 py-2.5 rounded-xl bg-secondary hover:bg-orange-brand hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-colors"
-          >
-            <Plus className="h-4 w-4" />
-            <span>Add Photo</span>
-          </button>
+        <div className="space-y-1.5">
+          <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+            Image URL
+          </label>
+          <div className="flex gap-2">
+            <input
+              type="url"
+              value={imageUrlInput}
+              onChange={(e) => setImageUrlInput(e.target.value)}
+              placeholder="https://images.unsplash.com/..."
+              className="flex-1 px-4 py-2.5 rounded-xl bg-secondary border border-border text-xs text-foreground focus:outline-none focus:border-orange-brand"
+            />
+            <button
+              type="button"
+              onClick={handleAddImage}
+              className="px-4 py-2.5 rounded-xl bg-secondary hover:bg-orange-brand hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-colors"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Add URL</span>
+            </button>
+          </div>
         </div>
 
         {/* Thumbnails grid */}

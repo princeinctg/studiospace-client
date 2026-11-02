@@ -8,6 +8,7 @@ import { Mail, Lock, User, ArrowRight, ShieldCheck, Building, Sparkles } from "l
 import { useAuth } from "@/components/providers/AuthContext";
 import { useToast } from "@/components/providers/ToastProvider";
 import { BrandLogo } from "@/components/ui/BrandLogo";
+import { GoogleLogo } from "@/components/ui/GoogleLogo";
 import { UserRole } from "@/types";
 
 export default function RegisterPage() {
@@ -29,16 +30,6 @@ export default function RegisterPage() {
     if (password.length < 6) {
       setErrorMsg("Password must be at least 6 characters.");
       toast("error", "Validation Error", "Password must be at least 6 characters.");
-      return;
-    }
-    if (!/[A-Z]/.test(password)) {
-      setErrorMsg("Password must contain at least one uppercase letter.");
-      toast("error", "Validation Error", "Password must contain at least one uppercase letter.");
-      return;
-    }
-    if (!/[a-z]/.test(password)) {
-      setErrorMsg("Password must contain at least one lowercase letter.");
-      toast("error", "Validation Error", "Password must contain at least one lowercase letter.");
       return;
     }
 
@@ -192,17 +183,17 @@ export default function RegisterPage() {
           <button
             type="button"
             onClick={handleGoogleAuth}
-            className="w-full py-2.5 px-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-xs text-white font-medium flex items-center justify-center gap-2 transition-colors hover:border-orange-brand/50"
+            className="w-full py-3 px-4 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 text-xs text-white font-semibold flex items-center justify-center gap-2.5 transition-all hover:border-orange-brand/50 shadow-sm"
           >
-            <Sparkles className="h-4 w-4 text-gold" />
-            <span>Continue with Google</span>
+            <GoogleLogo className="h-4 w-4 shrink-0" />
+            <span>Sign up with Google</span>
           </button>
         </div>
 
         <div className="text-center text-xs text-neutral-400 border-t border-white/10 pt-4 mt-6">
-          Already registered?{" "}
+          Already have an account?{" "}
           <Link href="/login" className="text-orange-brand font-semibold hover:underline">
-            Sign In Here
+            Sign in
           </Link>
         </div>
 

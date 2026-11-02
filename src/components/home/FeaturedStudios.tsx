@@ -301,7 +301,14 @@ export function FeaturedStudios() {
         }
 
         if (list.length > 0) {
+          if (list.length < 8) {
+            const existingSlugs = new Set(list.map((s) => s.slug || s.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')));
+            const missing = fallbackFeatured.filter((f) => !existingSlugs.has(f.slug));
+            list = [...list, ...missing].slice(0, 8);
+          }
           setStudios(list);
+        } else {
+          setStudios(fallbackFeatured);
         }
       } catch {
         // Keeps fallback data

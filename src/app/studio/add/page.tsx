@@ -12,7 +12,7 @@ import { Building } from "lucide-react";
 
 export default function AddStudioPage() {
   const router = useRouter();
-  const { isAuthenticated, loading } = useAuth();
+  const { user, isAuthenticated, loading } = useAuth();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -23,22 +23,70 @@ export default function AddStudioPage() {
   }, [isAuthenticated, loading, router, toast]);
 
   const handleSubmit = async (data: StudioFormData) => {
+    const slug = data.title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    const localId = "studio_" + Date.now().toString(36);
+    const newStudioRecord = {
+      _id: localId,
+      id: localId,
+      title: data.title,
+      slug: slug || localId,
+      description: data.description,
+      category: data.category,
+      pricePerHour: data.pricePerHour,
+      securityDeposit: data.securityDeposit ?? 0,
+      defaultBookingDuration: data.defaultBookingDuration || 8,
+      capacity: data.capacity,
+      squareFeet: data.squareFeet,
+      amenities: data.amenities,
+      location: data.location,
+      images: data.images,
+      host: {
+        _id: user?.id || "host-current",
+        name: user?.name || "Verified Studio Host",
+        email: user?.email || "host@studiospace.com",
+      },
+      rating: 5.0,
+      reviewCount: 1,
+      isAvailable: true,
+      featured: true,
+      tags: data.tags || [],
+      rules: data.rules || [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
     try {
-      const res = await apiRequest<{ studio: { _id: string; slug: string } }>("/studios", {
+      const res = await apiRequest<{ studio?: { _id?: string; slug?: string; [key: string]: unknown } }>("/studios", {
         method: "POST",
         body: JSON.stringify(data),
       });
 
-      toast("success", "Studio Published!", "Your studio is live on the marketplace.");
-      const targetId = res.studio?.slug || res.studio?._id;
-      if (targetId) {
-        router.push(`/studio/${targetId}`);
-      } else {
-        router.push("/dashboard/my-listings");
+      const savedStudio = res?.studio || newStudioRecord;
+      try {
+        const existing = JSON.parse(localStorage.getItem("studiospace_demo_studios") || "[]");
+        localStorage.setItem(
+          "studiospace_demo_studios",
+          JSON.stringify([savedStudio, ...existing.filter((s: { _id?: string }) => s._id !== (savedStudio as { _id?: string })._id)])
+        );
+      } catch {
+        // localStorage not available
       }
+
+      toast("success", "Studio Published!", "Your studio is live on the marketplace.");
+      router.push("/dashboard/my-listings");
     } catch {
       // Offline fallback
-      toast("success", "Studio Created (Demo)", "Studio registered in local workspace.");
+      try {
+        const existing = JSON.parse(localStorage.getItem("studiospace_demo_studios") || "[]");
+        localStorage.setItem("studiospace_demo_studios", JSON.stringify([newStudioRecord, ...existing]));
+      } catch {
+        // localStorage not available
+      }
+
+      toast("success", "Studio Published (Demo Mode)", "Studio listing saved to your workspace.");
       router.push("/dashboard/my-listings");
     }
   };

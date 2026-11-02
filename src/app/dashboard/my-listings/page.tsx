@@ -32,15 +32,16 @@ export default function MyListingsPage() {
 
   const fetchMyStudios = async () => {
     setLoading(true);
+    let loaded: Studio[] = [];
     try {
       const data = await apiRequest<Record<string, unknown> | unknown[]>("/studios/my-listings");
       const raw = Array.isArray(data) ? data : (data as { studios?: unknown[] })?.studios;
       if (Array.isArray(raw)) {
-        setStudios(raw.map(normalizeStudio));
+        loaded = raw.map(normalizeStudio);
       }
     } catch {
       // Fallback demo studios for host
-      setStudios([
+      loaded = [
         {
           _id: "demo-1",
           title: "The Industrial Daylight Loft",
@@ -63,10 +64,23 @@ export default function MyListingsPage() {
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         },
-      ]);
-    } finally {
-      setLoading(false);
+      ];
     }
+
+    try {
+      const local = JSON.parse(localStorage.getItem("studiospace_demo_studios") || "[]");
+      if (Array.isArray(local) && local.length > 0) {
+        const localStudios = local.map(normalizeStudio);
+        const existingIds = new Set(loaded.map((s) => s._id));
+        const toAdd = localStudios.filter((s) => !existingIds.has(s._id));
+        loaded = [...toAdd, ...loaded];
+      }
+    } catch {
+      // Ignore localStorage errors
+    }
+
+    setStudios(loaded);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -86,6 +100,20 @@ export default function MyListingsPage() {
       setStudios((prev) => prev.filter((s) => s._id !== deleteModalStudio._id));
       toast("info", "Removed from View", "Studio listing deleted.");
     } finally {
+      try {
+        const local = JSON.parse(localStorage.getItem("studiospace_demo_studios") || "[]");
+        localStorage.setItem(
+          "studiospace_demo_studios",
+          JSON.stringify(
+            local.filter(
+              (s: { _id?: string; slug?: string }) =>
+                s._id !== deleteModalStudio._id && s.slug !== deleteModalStudio.slug
+            )
+          )
+        );
+      } catch {
+        // Ignore localStorage error
+      }
       setDeleteModalStudio(null);
     }
   };

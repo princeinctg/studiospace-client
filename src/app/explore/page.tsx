@@ -288,11 +288,36 @@ function ExploreContent() {
         if (filters.maxPrice) queryParams.set("maxPrice", filters.maxPrice);
         if (filters.sort) queryParams.set("sort", filters.sort);
 
+        let list: Studio[] = [];
         const data = await apiRequest<Record<string, unknown> | unknown[]>(`/studios?${queryParams.toString()}`);
         const rawList = Array.isArray(data) ? data : (data as { studios?: unknown[] })?.studios;
         if (Array.isArray(rawList)) {
-          setStudios(rawList.map(normalizeStudio));
+          list = rawList.map(normalizeStudio);
         }
+
+        try {
+          const local = JSON.parse(localStorage.getItem("studiospace_demo_studios") || "[]");
+          if (Array.isArray(local) && local.length > 0) {
+            let localStudios: Studio[] = local.map(normalizeStudio);
+            if (filters.category && filters.category !== "all") {
+              localStudios = localStudios.filter((s) => s.category === filters.category);
+            }
+            if (filters.city) {
+              localStudios = localStudios.filter((s) => s.location?.city?.toLowerCase() === filters.city.toLowerCase());
+            }
+            if (searchKeyword.trim()) {
+              const q = searchKeyword.toLowerCase();
+              localStudios = localStudios.filter((s) => s.title.toLowerCase().includes(q) || s.description.toLowerCase().includes(q));
+            }
+            const existingIds = new Set(list.map((s) => s._id));
+            const toAdd = localStudios.filter((s) => !existingIds.has(s._id));
+            list = [...toAdd, ...list];
+          }
+        } catch {
+          // Ignore localStorage error
+        }
+
+        setStudios(list);
       } catch {
         // Filter fallback dataset locally if backend server is not yet attached
         let filtered = [...fallbackExploreStudios];
@@ -309,6 +334,29 @@ function ExploreContent() {
           const q = searchKeyword.toLowerCase();
           filtered = filtered.filter((s) => s.title.toLowerCase().includes(q) || s.description.toLowerCase().includes(q));
         }
+
+        try {
+          const local = JSON.parse(localStorage.getItem("studiospace_demo_studios") || "[]");
+          if (Array.isArray(local) && local.length > 0) {
+            let localStudios: Studio[] = local.map(normalizeStudio);
+            if (filters.category && filters.category !== "all") {
+              localStudios = localStudios.filter((s) => s.category === filters.category);
+            }
+            if (filters.city) {
+              localStudios = localStudios.filter((s) => s.location?.city?.toLowerCase() === filters.city.toLowerCase());
+            }
+            if (searchKeyword.trim()) {
+              const q = searchKeyword.toLowerCase();
+              localStudios = localStudios.filter((s) => s.title.toLowerCase().includes(q) || s.description.toLowerCase().includes(q));
+            }
+            const existingIds = new Set(filtered.map((s) => s._id));
+            const toAdd = localStudios.filter((s) => !existingIds.has(s._id));
+            filtered = [...toAdd, ...filtered];
+          }
+        } catch {
+          // Ignore localStorage error
+        }
+
         setStudios(filtered);
       } finally {
         setLoading(false);
