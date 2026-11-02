@@ -99,15 +99,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const normalizeUser = (raw?: RawUserResponse | null): User => {
+    const email = (raw?.email || "").toLowerCase().trim();
+    let avatar = raw?.photoURL || raw?.avatar || "";
+
+    // Canonical Avatar Mapping: Guarantee Guest Demo is Female and Host Demo is Male
+    if (email === "guest@studiospace.com" || raw?.name?.toLowerCase().includes("imrita")) {
+      avatar = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80";
+    } else if (email === "host@studiospace.com" || raw?.name?.toLowerCase().includes("imdatul")) {
+      avatar = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80";
+    }
+
     return {
       id: raw?._id || raw?.id || "user-id",
-      name: raw?.name || "StudioSpace User",
+      name: raw?.name || (email === "guest@studiospace.com" ? "Imrita Aksa (Guest Demo)" : "StudioSpace User"),
       email: raw?.email || "",
       role: raw?.role === "host" || raw?.role === "admin" ? raw.role : "guest",
-      avatar: raw?.photoURL || raw?.avatar || "",
+      avatar,
       phone: raw?.phone || "",
       createdAt: raw?.createdAt,
-      isDemo: Boolean(raw?.isDemo),
+      isDemo: Boolean(raw?.isDemo) || email.includes("studiospace.com"),
     };
   };
 
@@ -144,13 +154,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (cached) {
         try {
           const parsed = JSON.parse(cached);
-          const predefined = parsed?.email ? PREDEFINED_DEMO_ACCOUNTS[parsed.email.toLowerCase()] : null;
-          if (predefined) {
-            setUser({ ...predefined.user, isDemo: true });
-            localStorage.setItem("studiospace_user", JSON.stringify({ ...predefined.user, isDemo: true }));
-          } else {
-            setUser({ ...parsed, isDemo: true });
-          }
+          const u = normalizeUser(parsed);
+          setUser({ ...u, isDemo: true });
+          localStorage.setItem("studiospace_user", JSON.stringify({ ...u, isDemo: true }));
         } catch {
           setUser(null);
         }
@@ -180,7 +186,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const cached = localStorage.getItem("studiospace_user");
         if (cached) {
           try {
-            setUser(JSON.parse(cached));
+            const parsed = JSON.parse(cached);
+            const u = normalizeUser(parsed);
+            setUser(u);
+            localStorage.setItem("studiospace_user", JSON.stringify(u));
           } catch {
             setUser(null);
           }
