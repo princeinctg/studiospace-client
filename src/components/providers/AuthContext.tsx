@@ -43,7 +43,7 @@ export const PREDEFINED_DEMO_ACCOUNTS: Record<string, { user: User; password: st
       name: "Imrita Aksa (Guest Demo)",
       email: "guest@studiospace.com",
       role: "guest",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80",
       phone: "+1 (555) 018-9271",
       isDemo: true,
     },
@@ -144,7 +144,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (cached) {
         try {
           const parsed = JSON.parse(cached);
-          setUser({ ...parsed, isDemo: true });
+          const predefined = parsed?.email ? PREDEFINED_DEMO_ACCOUNTS[parsed.email.toLowerCase()] : null;
+          if (predefined) {
+            setUser({ ...predefined.user, isDemo: true });
+            localStorage.setItem("studiospace_user", JSON.stringify({ ...predefined.user, isDemo: true }));
+          } else {
+            setUser({ ...parsed, isDemo: true });
+          }
         } catch {
           setUser(null);
         }
@@ -262,7 +268,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           role: cleanEmail.includes("host") ? "host" : "guest",
           avatar: cleanEmail.includes("host")
             ? "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80"
-            : "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+            : "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80",
           phone: "+1 (555) 019-2834",
           isDemo: true,
         };
