@@ -50,10 +50,23 @@ export function Navbar() {
     setUserDropdownOpen(false);
   }, [pathname]);
 
-  const navLinks = [
+  const navLinks = isAuthenticated
+    ? [
+        { label: "Home", href: "/" },
+        { label: "Explore Studios", href: "/explore" },
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "My Studios", href: "/dashboard/my-listings" },
+        { label: "My Bookings", href: "/dashboard/my-bookings" },
+      ]
+    : [
+        { label: "Home", href: "/" },
+        { label: "Explore Studios", href: "/explore" },
+      ];
+
+  const mobileNavLinks = [
     { label: "Home", href: "/" },
     { label: "Explore Studios", href: "/explore" },
-    { label: "Dashboard", href: "/dashboard" },
+    ...(isAuthenticated ? [{ label: "Dashboard", href: "/dashboard" }] : []),
   ];
 
   return (
@@ -223,6 +236,12 @@ export function Navbar() {
             ) : (
               <div className="flex items-center gap-2">
                 <Link
+                  href="/register"
+                  className="hidden sm:inline-flex items-center px-3.5 py-1.5 rounded-xl border border-border/80 hover:bg-secondary text-xs font-semibold text-foreground transition-all hover:scale-[1.02]"
+                >
+                  Register
+                </Link>
+                <Link
                   href="/login"
                   className="px-4 py-2 rounded-xl text-xs font-semibold bg-orange-brand hover:bg-orange-hover text-white shadow-glow transition-all hover:scale-[1.02]"
                 >
@@ -259,7 +278,7 @@ export function Navbar() {
                   Creative Marketplace
                 </span>
               </div>
-              {navLinks.map((link) => (
+              {mobileNavLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -332,12 +351,18 @@ export function Navbar() {
                   </button>
                 </div>
               ) : (
-                <div className="pt-3 border-t border-border/60 mt-2">
+                <div className="pt-3 border-t border-border/60 mt-2 flex flex-col gap-2">
                   <Link
                     href="/login"
-                    className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-orange-brand hover:bg-orange-hover text-white text-sm font-semibold shadow-glow transition-all"
+                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-orange-brand hover:bg-orange-hover text-white text-sm font-semibold shadow-glow transition-all"
                   >
                     Sign In
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-border bg-secondary hover:bg-secondary/80 text-foreground text-sm font-semibold transition-all"
+                  >
+                    Register
                   </Link>
                 </div>
               )}
