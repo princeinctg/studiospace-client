@@ -1,6 +1,9 @@
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
-
 [build]
   command = "npm run build"
   publish = ".next"
+
+[build.environment]
+  NEXT_PUBLIC_API_URL = "https://studiospace-api.netlify.app/api"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

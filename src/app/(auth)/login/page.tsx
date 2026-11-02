@@ -146,7 +146,7 @@ export default function LoginPage() {
           <div className="relative flex items-center justify-center">
             <div className="border-t border-white/10 w-full" />
             <span className="bg-charcoal px-3 text-[10px] uppercase tracking-wider text-neutral-500 absolute">
-              Or Examiner Demo
+              Or 
             </span>
           </div>
 
