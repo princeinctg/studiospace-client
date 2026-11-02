@@ -52,7 +52,7 @@ export default function LoginPage() {
     }
   };
 
-  const handleFillDemo = async (role: "host" | "guest") => {
+  const handleQuickFill = async (role: "host" | "guest") => {
     if (role === "host") {
       setEmail("host@studiospace.com");
       setPassword("HostPassword123!");
@@ -188,7 +188,7 @@ export default function LoginPage() {
           <div className="grid grid-cols-2 gap-2.5 pt-1">
             <button
               type="button"
-              onClick={() => handleFillDemo("host")}
+              onClick={() => handleQuickFill("host")}
               className="py-2.5 px-3 rounded-xl border border-forest/50 bg-forest/20 text-emerald-300 text-xs font-bold flex items-center justify-center gap-2 hover:bg-forest/30 transition-all hover:scale-[1.01] active:scale-[0.99]"
             >
               <UserCheck className="h-4 w-4 shrink-0 text-emerald-400" />
@@ -196,7 +196,7 @@ export default function LoginPage() {
             </button>
             <button
               type="button"
-              onClick={() => handleFillDemo("guest")}
+              onClick={() => handleQuickFill("guest")}
               className="py-2.5 px-3 rounded-xl border border-orange-brand/40 bg-orange-brand/10 text-orange-brand text-xs font-bold flex items-center justify-center gap-2 hover:bg-orange-brand/20 transition-all hover:scale-[1.01] active:scale-[0.99]"
             >
               <UserCheck className="h-4 w-4 shrink-0 text-orange-brand" />
