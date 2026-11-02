@@ -11,7 +11,7 @@ import { BrandLogo } from "@/components/ui/BrandLogo";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, googleLogin } = useAuth();
+  const { login, initiateGoogleLogin } = useAuth();
   const { toast } = useToast();
 
   const [email, setEmail] = useState("");
@@ -47,18 +47,8 @@ export default function LoginPage() {
     }
   };
 
-  const handleGoogleDemo = async () => {
-    setLoading(true);
-    try {
-      await googleLogin("guest@studiospace.com", "Sarah Jenkins (Examiner)");
-      toast("success", "Google Sign In Verified", "Authenticated as examiner.");
-      router.push("/dashboard");
-    } catch {
-      toast("info", "Demo Mode", "Signed in with examiner credentials.");
-      router.push("/dashboard");
-    } finally {
-      setLoading(false);
-    }
+  const handleGoogleAuth = () => {
+    initiateGoogleLogin();
   };
 
   return (
@@ -150,11 +140,11 @@ export default function LoginPage() {
 
           <button
             type="button"
-            onClick={handleGoogleDemo}
-            className="w-full py-2.5 px-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-xs text-white font-medium flex items-center justify-center gap-2 transition-colors"
+            onClick={handleGoogleAuth}
+            className="w-full py-2.5 px-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-xs text-white font-medium flex items-center justify-center gap-2 transition-colors hover:border-orange-brand/50"
           >
             <Sparkles className="h-4 w-4 text-gold" />
-            <span>Continue with Google / Quick Examiner</span>
+            <span>Continue with Google</span>
           </button>
 
           <div className="grid grid-cols-2 gap-2 pt-1">

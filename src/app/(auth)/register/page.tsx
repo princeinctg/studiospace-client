@@ -12,7 +12,7 @@ import { UserRole } from "@/types";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { register: registerUser, googleLogin } = useAuth();
+  const { register: registerUser, initiateGoogleLogin } = useAuth();
   const { toast } = useToast();
 
   const [name, setName] = useState("");
@@ -57,18 +57,8 @@ export default function RegisterPage() {
     }
   };
 
-  const handleGoogleDemo = async () => {
-    setLoading(true);
-    try {
-      await googleLogin("guest@studiospace.com", "Sarah Jenkins (Examiner)");
-      toast("success", "Google Registration Verified", "Authenticated as examiner.");
-      router.push("/dashboard");
-    } catch {
-      toast("info", "Demo Mode", "Signed in with examiner credentials.");
-      router.push("/dashboard");
-    } finally {
-      setLoading(false);
-    }
+  const handleGoogleAuth = () => {
+    initiateGoogleLogin();
   };
 
   return (
@@ -201,11 +191,11 @@ export default function RegisterPage() {
 
           <button
             type="button"
-            onClick={handleGoogleDemo}
-            className="w-full py-2.5 px-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-xs text-white font-medium flex items-center justify-center gap-2 transition-colors"
+            onClick={handleGoogleAuth}
+            className="w-full py-2.5 px-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-xs text-white font-medium flex items-center justify-center gap-2 transition-colors hover:border-orange-brand/50"
           >
             <Sparkles className="h-4 w-4 text-gold" />
-            <span>Continue with Google / Quick Examiner</span>
+            <span>Continue with Google</span>
           </button>
         </div>
 
