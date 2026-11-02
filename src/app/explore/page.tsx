@@ -197,8 +197,8 @@ const fallbackExploreStudios: Studio[] = [
     defaultBookingDuration: 8,
     location: { address: "450 Mission St", city: "San Francisco", country: "United States" },
     images: [
-      "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1578382171692-304e0ec89c34?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1606920669741-c8ba74262a94?auto=format&fit=crop&w=800&q=80",
     ],
     host: { _id: "h1", name: "Imdatul Hoque", email: "host@studiospace.com" },
     rating: 4.9,
