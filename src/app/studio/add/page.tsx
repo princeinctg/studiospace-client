@@ -18,7 +18,7 @@ export default function AddStudioPage() {
   useEffect(() => {
     if (!loading && !isAuthenticated) {
       toast("info", "Sign in required", "Please sign in to list a creative studio.");
-      router.push("/login");
+      router.push("/login?redirect=/studio/add");
     }
   }, [isAuthenticated, loading, router, toast]);
 
@@ -90,6 +90,25 @@ export default function AddStudioPage() {
       router.push("/my-listings");
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background text-foreground">
+        <Navbar />
+        <main className="flex-1 pt-24 pb-20 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <div className="h-8 w-8 rounded-full border-2 border-orange-brand border-t-transparent animate-spin" />
+            <p className="text-xs text-muted-foreground animate-pulse">Checking host credentials...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">

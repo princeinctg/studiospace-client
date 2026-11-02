@@ -24,7 +24,7 @@ export default function EditStudioPage() {
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       toast("info", "Sign in required", "Please sign in to manage studio listings.");
-      router.push("/login");
+      router.push(`/login?redirect=/studio/${idOrSlug}/edit`);
       return;
     }
 
@@ -81,13 +81,35 @@ export default function EditStudioPage() {
     }
   };
 
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background text-foreground">
+        <Navbar />
+        <main className="flex-1 pt-24 pb-20 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <div className="h-8 w-8 rounded-full border-2 border-orange-brand border-t-transparent animate-spin" />
+            <p className="text-xs text-muted-foreground animate-pulse">Checking authorization...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col bg-background text-foreground">
         <Navbar />
-        <div className="flex-1 container mx-auto px-6 py-24 text-center">
-          Loading studio details for editing...
-        </div>
+        <main className="flex-1 pt-24 pb-20 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <div className="h-8 w-8 rounded-full border-2 border-orange-brand border-t-transparent animate-spin" />
+            <p className="text-xs text-muted-foreground animate-pulse">Loading studio details for editing...</p>
+          </div>
+        </main>
         <Footer />
       </div>
     );
