@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -78,17 +79,37 @@ export default function DashboardOverviewPage() {
           <div className="rounded-3xl border border-border bg-card p-6 sm:p-8 shadow-cinematic mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-80 h-80 bg-orange-brand/5 rounded-full blur-3xl pointer-events-none" />
 
-            <div className="space-y-2 relative z-10">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-forest/20 text-emerald-400 text-xs font-semibold uppercase tracking-wider border border-forest/40">
-                <Sparkles className="h-3.5 w-3.5 text-gold" />
-                <span>{user?.role === "host" ? "Host Management Hub" : "Creator Production Studio"}</span>
+            <div className="flex items-center gap-4 sm:gap-6 relative z-10">
+              <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl bg-orange-brand/20 border-2 border-orange-brand/40 overflow-hidden shrink-0 shadow-sm relative">
+                {user?.avatar ? (
+                  <Image
+                    src={user.avatar}
+                    alt={user.name || "User"}
+                    width={80}
+                    height={80}
+                    className="h-full w-full object-cover"
+                    unoptimized
+                  />
+                ) : (
+                  <div className="h-full w-full flex items-center justify-center text-xl font-bold text-orange-brand">
+                    {(user?.name || "U").charAt(0)}
+                  </div>
+                )}
+                <div className="absolute bottom-1 right-1 h-3.5 w-3.5 rounded-full bg-emerald-500 border-2 border-card" title="Active Session" />
               </div>
-              <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-                Hello, {user?.name || "Creator"}
-              </h1>
-              <p className="text-xs sm:text-sm text-muted-foreground max-w-md">
-                Monitor schedule performance, upcoming shoots, and confirmed reservations across StudioSpace.
-              </p>
+
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-forest/20 text-emerald-400 text-[10px] font-bold uppercase tracking-wider border border-forest/40">
+                  <Sparkles className="h-3 w-3 text-gold" />
+                  <span>{user?.role === "host" ? "Verified Studio Host" : "Verified Creator"}</span>
+                </div>
+                <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+                  {user?.name || "StudioSpace Creator"}
+                </h1>
+                <p className="text-xs text-muted-foreground font-mono">
+                  {user?.email || "user@studiospace.com"}
+                </p>
+              </div>
             </div>
 
             {/* Quick Actions */}

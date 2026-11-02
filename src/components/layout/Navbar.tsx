@@ -157,12 +157,30 @@ export function Navbar() {
                       transition={{ duration: 0.15 }}
                       className="absolute right-0 mt-2 w-56 rounded-2xl border bg-card/95 backdrop-blur-xl p-2 shadow-cinematic z-50 text-card-foreground"
                     >
-                      <div className="px-3 py-2 border-b border-border/60 mb-1">
-                        <div className="text-xs font-bold truncate">{user.name}</div>
-                        <div className="text-[11px] text-muted-foreground truncate">{user.email}</div>
-                        <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-forest/20 text-emerald-400 border border-forest/40">
-                          {user.role}
-                        </span>
+                      <div className="flex items-center gap-2.5 px-3 py-2.5 border-b border-border/60 mb-1">
+                        <div className="h-9 w-9 rounded-full bg-orange-brand/20 border border-orange-brand/40 overflow-hidden shrink-0">
+                          {user.avatar ? (
+                            <Image
+                              src={user.avatar}
+                              alt={user.name}
+                              width={36}
+                              height={36}
+                              className="h-full w-full object-cover"
+                              unoptimized
+                            />
+                          ) : (
+                            <div className="h-full w-full flex items-center justify-center text-xs font-bold text-orange-brand">
+                              {user.name.charAt(0)}
+                            </div>
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="text-xs font-bold truncate text-foreground">{user.name}</div>
+                          <div className="text-[11px] text-muted-foreground truncate">{user.email}</div>
+                          <span className="inline-block mt-0.5 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-forest/20 text-emerald-400 border border-forest/40">
+                            {user.role}
+                          </span>
+                        </div>
                       </div>
 
                       <Link

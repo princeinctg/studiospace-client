@@ -104,16 +104,27 @@ export function normalizeStudio(raw: unknown): Studio {
 
   // Determine host
   const rawHost = (item.host as Record<string, unknown>) || {};
+  let hostEmail = String(rawHost.email || item.ownerEmail || "host@studiospace.com").toLowerCase().trim();
+  let hostName = String(rawHost.name || item.ownerName || "");
+  let hostAvatar = String(rawHost.avatar || rawHost.photoURL || "");
+
+  if (hostEmail === "host@studiospace.com" || hostName.toLowerCase().includes("imdatul") || !hostName) {
+    hostName = "Imdatul Hoque";
+    hostEmail = "host@studiospace.com";
+    hostAvatar = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80";
+  } else if (hostEmail === "guest@studiospace.com" || hostName.toLowerCase().includes("imrita")) {
+    hostName = "Imrita Aksa";
+    hostEmail = "guest@studiospace.com";
+    hostAvatar = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80";
+  }
+
   const host = {
-    _id: String(rawHost._id || item.hostId || "host-1"),
-    name: String(rawHost.name || item.ownerName || "Studio Host"),
-    email: String(rawHost.email || item.ownerEmail || "host@studiospace.com"),
-    avatar: String(
-      rawHost.avatar ||
-        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80"
-    ),
-    bio: String(rawHost.bio || "Verified StudioSpace Curator"),
-    phone: String(rawHost.phone || "+1 (555) 019-2834"),
+    _id: String(rawHost._id || item.hostId || "host-imdatul-hoque"),
+    name: hostName,
+    email: hostEmail,
+    avatar: hostAvatar || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
+    bio: String(rawHost.bio || "Commercial director & creative studio curator based in Brooklyn, NY."),
+    phone: String(rawHost.phone || "+1 (555) 328-9921"),
   };
 
   const rawPrice = Number(item.pricePerHour ?? item.price ?? item.hourlyRate);
