@@ -171,32 +171,22 @@ export default function LoginPage() {
             )}
           </button>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+          <div className="grid grid-cols-2 gap-2.5 pt-1">
             <button
               type="button"
               onClick={() => handleFillDemo("host")}
-              className="w-full py-2.5 px-3 rounded-xl border border-forest/50 bg-forest/20 text-emerald-300 text-xs font-semibold flex items-center justify-between gap-2 hover:bg-forest/30 transition-all hover:scale-[1.01] active:scale-[0.99]"
+              className="py-2.5 px-3 rounded-xl border border-forest/50 bg-forest/20 text-emerald-300 text-xs font-bold flex items-center justify-center gap-2 hover:bg-forest/30 transition-all hover:scale-[1.01] active:scale-[0.99]"
             >
-              <div className="flex items-center gap-2 min-w-0">
-                <UserCheck className="h-4 w-4 shrink-0 text-emerald-400" />
-                <span className="whitespace-nowrap font-medium text-white">Imdatul Hoque</span>
-              </div>
-              <span className="text-[10px] uppercase px-2 py-0.5 rounded bg-forest/40 text-emerald-300 font-bold tracking-wider shrink-0 border border-forest/60">
-                HOST
-              </span>
+              <UserCheck className="h-4 w-4 shrink-0 text-emerald-400" />
+              <span className="uppercase tracking-wider">HOST</span>
             </button>
             <button
               type="button"
               onClick={() => handleFillDemo("guest")}
-              className="w-full py-2.5 px-3 rounded-xl border border-orange-brand/40 bg-orange-brand/10 text-orange-brand text-xs font-semibold flex items-center justify-between gap-2 hover:bg-orange-brand/20 transition-all hover:scale-[1.01] active:scale-[0.99]"
+              className="py-2.5 px-3 rounded-xl border border-orange-brand/40 bg-orange-brand/10 text-orange-brand text-xs font-bold flex items-center justify-center gap-2 hover:bg-orange-brand/20 transition-all hover:scale-[1.01] active:scale-[0.99]"
             >
-              <div className="flex items-center gap-2 min-w-0">
-                <UserCheck className="h-4 w-4 shrink-0 text-orange-brand" />
-                <span className="whitespace-nowrap font-medium text-white">Imrita Aksa</span>
-              </div>
-              <span className="text-[10px] uppercase px-2 py-0.5 rounded bg-orange-brand/30 text-orange-brand font-bold tracking-wider shrink-0 border border-orange-brand/50">
-                GUEST
-              </span>
+              <UserCheck className="h-4 w-4 shrink-0 text-orange-brand" />
+              <span className="uppercase tracking-wider">GUEST</span>
             </button>
           </div>
         </div>
