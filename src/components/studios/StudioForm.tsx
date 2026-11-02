@@ -10,6 +10,7 @@ export interface StudioFormData {
   description: string;
   category: StudioCategory;
   pricePerHour: number;
+  defaultBookingDuration?: number;
   capacity: number;
   squareFeet: number;
   amenities: string[];
@@ -59,6 +60,7 @@ export function StudioForm({ initialData, onSubmit, isEditing = false }: StudioF
     description: initialData?.description || "",
     category: initialData?.category || "photography",
     pricePerHour: initialData?.pricePerHour || 120,
+    defaultBookingDuration: initialData?.defaultBookingDuration || 8,
     capacity: initialData?.capacity || 15,
     squareFeet: initialData?.squareFeet || 1500,
     amenities: initialData?.amenities || ["Natural Daylight", "High-Speed Fiber WiFi"],

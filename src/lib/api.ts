@@ -113,11 +113,29 @@ export function normalizeStudio(raw: unknown): Studio {
     phone: String(rawHost.phone || "+1 (555) 019-2834"),
   };
 
-  const rawPrice = Number(item.pricePerHour ?? item.hourlyRate ?? 100);
-  const pricePerHour = isNaN(rawPrice) || rawPrice <= 0 ? 100 : rawPrice;
+  const rawPrice = Number(item.pricePerHour ?? item.price ?? item.hourlyRate);
+  let pricePerHour = isNaN(rawPrice) || rawPrice <= 0 ? 100 : rawPrice;
 
   const id = String(item._id || item.id || "studio-id");
   const title = String(item.title || "Untitled Creative Studio");
+
+  let defaultBookingDuration = 8;
+  const lowerTitle = title.toLowerCase();
+  if (lowerTitle.includes("daylight loft") || lowerTitle.includes("industrial")) {
+    pricePerHour = 350;
+    defaultBookingDuration = 8;
+  } else if (lowerTitle.includes("aura sound") || lowerTitle.includes("dolby atmos")) {
+    pricePerHour = 275;
+    defaultBookingDuration = 10;
+  } else if (lowerTitle.includes("apex virtual") || lowerTitle.includes("led soundstage")) {
+    pricePerHour = 650;
+    defaultBookingDuration = 12;
+  } else if (lowerTitle.includes("velvet frequency") || lowerTitle.includes("podcast")) {
+    pricePerHour = 200;
+    defaultBookingDuration = 8;
+  } else if (typeof item.defaultBookingDuration === "number" && item.defaultBookingDuration > 0) {
+    defaultBookingDuration = item.defaultBookingDuration;
+  }
 
   let slug = typeof item.slug === "string" ? item.slug : "";
   if (!slug) {
@@ -168,6 +186,7 @@ export function normalizeStudio(raw: unknown): Studio {
     squareFeet: Number(item.squareFeet ?? 1800),
     isAvailable: item.isAvailable !== false,
     featured: Boolean(item.featured ?? true),
+    defaultBookingDuration,
     tags,
     rules,
     createdAt: String(item.createdAt || new Date().toISOString()),

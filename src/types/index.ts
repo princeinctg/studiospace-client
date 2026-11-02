@@ -55,6 +55,7 @@ export interface Studio {
   squareFeet: number;
   isAvailable: boolean;
   featured: boolean;
+  defaultBookingDuration?: number;
   tags: string[];
   rules?: string[];
   createdAt: string;

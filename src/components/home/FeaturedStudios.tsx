@@ -16,7 +16,8 @@ const fallbackFeatured: Studio[] = [
     description: "Expansive 2,400 sq.ft loft flooded with north-facing natural daylight through 14-foot factory arched windows. Features original exposed brick walls and an infinity cyclorama wall.",
     category: "photography",
     amenities: ["Natural Daylight", "Infinity Cyc Wall", "Profoto Lighting"],
-    pricePerHour: 125,
+    pricePerHour: 350,
+    defaultBookingDuration: 8,
     location: {
       address: "420 DUMBO Waterfront Ave",
       city: "Brooklyn",
@@ -48,7 +49,8 @@ const fallbackFeatured: Studio[] = [
     description: "State-of-the-art acoustically isolated recording facility with SSL Duality delta console and Genelec 7.1.4 Dolby Atmos monitoring.",
     category: "recording",
     amenities: ["Dolby Atmos", "SSL Console", "Vocal Booth"],
-    pricePerHour: 160,
+    pricePerHour: 275,
+    defaultBookingDuration: 10,
     location: {
       address: "880 Sunset Blvd",
       city: "Los Angeles",
@@ -80,7 +82,8 @@ const fallbackFeatured: Studio[] = [
     description: "Next-gen 5,000 sq.ft cinematic production soundstage with 180-degree curved LED volume wall and STC-65 acoustic treatment.",
     category: "film",
     amenities: ["LED Wall", "Soundproofed STC-65", "Lighting Grid"],
-    pricePerHour: 320,
+    pricePerHour: 650,
+    defaultBookingDuration: 12,
     location: {
       address: "1420 Film Center Dr",
       city: "Atlanta",
@@ -112,7 +115,8 @@ const fallbackFeatured: Studio[] = [
     description: "Boutique 4-camera 4K podcast lounge designed for visual creators. Shure SM7B dynamic mics and Blackmagic switchers.",
     category: "podcast",
     amenities: ["4K Multi-Cam", "Shure SM7B", "Soundproofed"],
-    pricePerHour: 95,
+    pricePerHour: 200,
+    defaultBookingDuration: 8,
     location: {
       address: "310 West Loop South",
       city: "Chicago",

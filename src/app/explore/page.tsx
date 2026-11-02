@@ -18,7 +18,8 @@ const fallbackExploreStudios: Studio[] = [
     description: "Expansive 2,400 sq.ft loft flooded with north-facing natural daylight through 14-foot factory arched windows. Features original exposed brick walls and an infinity cyclorama wall.",
     category: "photography",
     amenities: ["Natural Daylight", "Infinity Cyc Wall", "Profoto Lighting"],
-    pricePerHour: 125,
+    pricePerHour: 350,
+    defaultBookingDuration: 8,
     location: { address: "420 DUMBO Waterfront Ave", city: "Brooklyn", country: "United States" },
     images: [
       "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=800&q=80",
@@ -42,7 +43,8 @@ const fallbackExploreStudios: Studio[] = [
     description: "State-of-the-art acoustically isolated recording facility with SSL console and Genelec 7.1.4 Dolby Atmos monitoring.",
     category: "recording",
     amenities: ["Dolby Atmos", "SSL Console", "Vocal Booth"],
-    pricePerHour: 160,
+    pricePerHour: 275,
+    defaultBookingDuration: 10,
     location: { address: "880 Sunset Blvd", city: "Los Angeles", country: "United States" },
     images: [
       "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80",
@@ -66,7 +68,8 @@ const fallbackExploreStudios: Studio[] = [
     description: "Next-gen 5,000 sq.ft cinematic production soundstage with 180-degree curved LED volume wall.",
     category: "film",
     amenities: ["LED Wall", "Soundproofed STC-65"],
-    pricePerHour: 320,
+    pricePerHour: 650,
+    defaultBookingDuration: 12,
     location: { address: "1420 Film Center Dr", city: "Atlanta", country: "United States" },
     images: [
       "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=800&q=80",
@@ -90,7 +93,8 @@ const fallbackExploreStudios: Studio[] = [
     description: "Boutique 4-camera 4K podcast lounge designed for visual dialogue. Shure SM7B dynamic mics.",
     category: "podcast",
     amenities: ["4K Multi-Cam", "Shure SM7B", "Soundproofed"],
-    pricePerHour: 95,
+    pricePerHour: 200,
+    defaultBookingDuration: 8,
     location: { address: "310 West Loop South", city: "Chicago", country: "United States" },
     images: [
       "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=800&q=80",

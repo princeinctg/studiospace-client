@@ -131,10 +131,17 @@ export function StudioCard({ studio, priority = false }: StudioCardProps) {
         {/* Pricing & CTA */}
         <div className="pt-4 mt-3 border-t border-border flex items-center justify-between">
           <div>
-            <span className="text-lg font-bold font-mono text-orange-brand">
-              {formatCurrency(studio.pricePerHour || 100)}
-            </span>
-            <span className="text-xs text-muted-foreground"> / hour</span>
+            <div className="flex items-baseline gap-1">
+              <span className="text-lg font-bold font-mono text-orange-brand">
+                {formatCurrency(studio.pricePerHour || 100)}
+              </span>
+              <span className="text-xs text-muted-foreground"> / hour</span>
+            </div>
+            {studio.defaultBookingDuration ? (
+              <span className="block text-[11px] text-muted-foreground font-medium">
+                {studio.defaultBookingDuration}h default booking
+              </span>
+            ) : null}
           </div>
 
           <Link
