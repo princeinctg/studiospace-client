@@ -175,18 +175,28 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={() => handleFillDemo("host")}
-              className="py-2 px-3 rounded-xl border border-forest/50 bg-forest/20 text-emerald-300 text-[11px] font-semibold flex items-center justify-center gap-1.5 hover:bg-forest/30 transition-colors"
+              className="py-2.5 px-3 rounded-xl border border-forest/50 bg-forest/20 text-emerald-300 text-xs font-semibold flex items-center justify-between hover:bg-forest/30 transition-colors"
             >
-              <UserCheck className="h-3.5 w-3.5" />
-              <span>Host Demo Fill</span>
+              <div className="flex items-center gap-1.5 truncate">
+                <UserCheck className="h-3.5 w-3.5 shrink-0" />
+                <span className="truncate">Imdatul Hoque</span>
+              </div>
+              <span className="text-[10px] uppercase px-1.5 py-0.5 rounded bg-forest/40 text-emerald-300 font-bold tracking-wider shrink-0">
+                HOST
+              </span>
             </button>
             <button
               type="button"
               onClick={() => handleFillDemo("guest")}
-              className="py-2 px-3 rounded-xl border border-orange-brand/40 bg-orange-brand/10 text-orange-brand text-[11px] font-semibold flex items-center justify-center gap-1.5 hover:bg-orange-brand/20 transition-colors"
+              className="py-2.5 px-3 rounded-xl border border-orange-brand/40 bg-orange-brand/10 text-orange-brand text-xs font-semibold flex items-center justify-between hover:bg-orange-brand/20 transition-colors"
             >
-              <UserCheck className="h-3.5 w-3.5" />
-              <span>Guest Demo Fill</span>
+              <div className="flex items-center gap-1.5 truncate">
+                <UserCheck className="h-3.5 w-3.5 shrink-0" />
+                <span className="truncate">Imrita Aksa</span>
+              </div>
+              <span className="text-[10px] uppercase px-1.5 py-0.5 rounded bg-orange-brand/30 text-orange-brand font-bold tracking-wider shrink-0">
+                GUEST
+              </span>
             </button>
           </div>
         </div>

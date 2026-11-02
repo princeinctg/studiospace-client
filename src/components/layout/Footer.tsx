@@ -82,7 +82,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/login" className="hover:text-white transition-colors">
-                  Examiner Login
+                  Sign In
                 </Link>
               </li>
             </ul>

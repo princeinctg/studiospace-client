@@ -77,9 +77,7 @@ export function StudioForm({ initialData, onSubmit, isEditing = false }: StudioF
       country: initialData?.location?.country || "United States",
       postalCode: initialData?.location?.postalCode || "",
     },
-    images: initialData?.images && initialData.images.length > 0
-      ? initialData.images
-      : ["https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1200&q=85"],
+    images: initialData?.images || [],
     tags: initialData?.tags || ["Daylight", "Creative"],
     rules: initialData?.rules || [
       "No smoking inside the studio",
@@ -122,66 +120,54 @@ export function StudioForm({ initialData, onSubmit, isEditing = false }: StudioF
     e.preventDefault();
     setErrorMsg("");
 
-    let currentImages = [...formData.images];
-    if (currentImages.length === 0 && imageUrlInput.trim()) {
-      currentImages = [imageUrlInput.trim()];
-      setFormData((prev) => ({ ...prev, images: [imageUrlInput.trim()] }));
-      setImageUrlInput("");
-    }
-
-    // Studio Title: Completely unrestricted. Accept ANY non-empty title entered by the user.
+    // Studio Title: The only mandatory field. Accept ANY non-empty title entered by the user.
     const trimmedTitle = formData.title.trim();
     if (!trimmedTitle) {
       setErrorMsg("Studio title is required.");
       return;
     }
 
-    if (formData.pricePerHour < 1 || formData.pricePerHour > 10000) {
-      setErrorMsg("Studio hourly rate must be between $1 and $10,000 per hour.");
-      return;
+    // Image Upload & Multiple Images: Completely optional.
+    let currentImages = [...formData.images];
+    if (currentImages.length === 0 && imageUrlInput.trim()) {
+      currentImages = [imageUrlInput.trim()];
     }
-
-    if ((formData.securityDeposit ?? 0) < 0) {
-      setErrorMsg("Security deposit cannot be negative.");
-      return;
-    }
-
-    if (formData.capacity < 1) {
-      setErrorMsg("Maximum capacity must be at least 1 person.");
-      return;
-    }
-
-    if (!formData.location.address.trim()) {
-      setErrorMsg("Studio location / street address is required.");
-      return;
-    }
-
-    if (!formData.location.city.trim()) {
-      setErrorMsg("Location city is required.");
-      return;
-    }
-
-    if (!formData.description.trim()) {
-      setErrorMsg("Studio description is required.");
-      return;
-    }
-
-    // Default image fallback if user submitted without uploading an image
     if (currentImages.length === 0) {
       currentImages = [
         "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1200&q=85",
       ];
     }
 
-    if (formData.amenities.length === 0) {
-      setErrorMsg("Please select at least one amenity or equipment item.");
-      return;
-    }
+    // Description: Completely optional. No minimum word or length restriction.
+    const finalDescription =
+      formData.description.trim() ||
+      "Modern creative production studio equipped for professional photo, film, audio, and visual productions.";
+
+    // Location: Optional with sensible defaults.
+    const finalAddress = formData.location.address.trim() || "420 DUMBO Studio Way";
+    const finalCity = formData.location.city.trim() || "New York";
+    const finalCountry = formData.location.country.trim() || "United States";
+
+    // Amenities: Optional with defaults.
+    const finalAmenities =
+      formData.amenities.length > 0 ? formData.amenities : ["High-Speed Fiber WiFi", "Natural Daylight"];
+
+    const finalPrice = formData.pricePerHour > 0 ? formData.pricePerHour : 100;
 
     setSubmitting(true);
     try {
       await onSubmit({
         ...formData,
+        title: trimmedTitle,
+        description: finalDescription,
+        pricePerHour: finalPrice,
+        location: {
+          address: finalAddress,
+          city: finalCity,
+          country: finalCountry,
+          postalCode: formData.location.postalCode || "10001",
+        },
+        amenities: finalAmenities,
         images: currentImages,
         hostName: user?.name || "Verified Studio Host",
         hostEmail: user?.email || "host@studiospace.com",
@@ -319,10 +305,9 @@ export function StudioForm({ initialData, onSubmit, isEditing = false }: StudioF
 
         <div className="space-y-1.5">
           <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            Detailed Overview / Description
+            Detailed Overview / Description (Optional)
           </label>
           <textarea
-            required
             rows={4}
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -363,16 +348,15 @@ export function StudioForm({ initialData, onSubmit, isEditing = false }: StudioF
       {/* Location Card */}
       <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-4">
         <h3 className="font-display text-xl font-bold text-foreground">
-          Studio Location
+          Studio Location (Optional)
         </h3>
 
         <div className="space-y-1.5">
           <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            Street Address
+            Street Address (Optional)
           </label>
           <input
             type="text"
-            required
             value={formData.location.address}
             onChange={(e) =>
               setFormData({
@@ -388,11 +372,10 @@ export function StudioForm({ initialData, onSubmit, isEditing = false }: StudioF
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              City
+              City (Optional)
             </label>
             <input
               type="text"
-              required
               value={formData.location.city}
               onChange={(e) =>
                 setFormData({
@@ -407,11 +390,10 @@ export function StudioForm({ initialData, onSubmit, isEditing = false }: StudioF
 
           <div className="space-y-1.5">
             <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              Country
+              Country (Optional)
             </label>
             <input
               type="text"
-              required
               value={formData.location.country}
               onChange={(e) =>
                 setFormData({
@@ -430,7 +412,7 @@ export function StudioForm({ initialData, onSubmit, isEditing = false }: StudioF
       <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="font-display text-xl font-bold text-foreground">
-            Available Amenities & Equipment
+            Available Amenities & Equipment (Optional)
           </h3>
           <span className="text-xs font-mono text-orange-brand">
             {formData.amenities.length} Selected
@@ -461,10 +443,10 @@ export function StudioForm({ initialData, onSubmit, isEditing = false }: StudioF
       {/* Images Section */}
       <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-4">
         <h3 className="font-display text-xl font-bold text-foreground">
-          Studio Photographs & Image URL
+          Studio Photographs & Image URL (Optional)
         </h3>
         <p className="text-xs text-muted-foreground">
-          Enter direct image URLs from Unsplash, Cloudinary, or web hosting.
+          Optional: Enter direct image URLs or rely on the automated default studio image.
         </p>
 
         <div className="space-y-1.5">
@@ -491,27 +473,33 @@ export function StudioForm({ initialData, onSubmit, isEditing = false }: StudioF
         </div>
 
         {/* Thumbnails grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-          {formData.images.map((url, idx) => (
-            <div key={idx} className="relative aspect-video rounded-xl overflow-hidden border border-border group bg-muted">
-              <Image
-                src={url}
-                alt={`Studio preview ${idx + 1}`}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 50vw, 25vw"
-                unoptimized
-              />
-              <button
-                type="button"
-                onClick={() => handleRemoveImage(idx)}
-                className="absolute top-1 right-1 p-1 rounded-full bg-black/60 text-white hover:bg-red-500 transition-colors"
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </div>
-          ))}
-        </div>
+        {formData.images.length === 0 ? (
+          <p className="text-xs text-muted-foreground italic py-1">
+            No images uploaded. A verified default luxury studio photo will automatically be applied.
+          </p>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+            {formData.images.map((url, idx) => (
+              <div key={idx} className="relative aspect-video rounded-xl overflow-hidden border border-border group bg-muted">
+                <Image
+                  src={url}
+                  alt={`Studio preview ${idx + 1}`}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 50vw, 25vw"
+                  unoptimized
+                />
+                <button
+                  type="button"
+                  onClick={() => handleRemoveImage(idx)}
+                  className="absolute top-1 right-1 p-1 rounded-full bg-black/60 text-white hover:bg-red-500 transition-colors"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Submit Button */}

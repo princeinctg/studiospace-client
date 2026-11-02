@@ -28,7 +28,7 @@ export const PREDEFINED_DEMO_ACCOUNTS: Record<string, { user: User; password: st
   "host@studiospace.com": {
     user: {
       id: "demo-host-1",
-      name: "Imdatul Hoque (Host Demo)",
+      name: "Imdatul Hoque",
       email: "host@studiospace.com",
       role: "host",
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
@@ -40,7 +40,7 @@ export const PREDEFINED_DEMO_ACCOUNTS: Record<string, { user: User; password: st
   "guest@studiospace.com": {
     user: {
       id: "demo-guest-1",
-      name: "Imrita Aksa (Guest Demo)",
+      name: "Imrita Aksa",
       email: "guest@studiospace.com",
       role: "guest",
       avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80",
@@ -109,9 +109,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       avatar = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80";
     }
 
+    let resolvedName = raw?.name || "";
+    if (email === "guest@studiospace.com" || resolvedName.toLowerCase().includes("imrita")) {
+      resolvedName = "Imrita Aksa";
+    } else if (email === "host@studiospace.com" || resolvedName.toLowerCase().includes("imdatul")) {
+      resolvedName = "Imdatul Hoque";
+    } else if (!resolvedName) {
+      resolvedName = "StudioSpace User";
+    }
+
+    // Strip any residual demo / examiner labels from display name
+    const cleanName = resolvedName
+      .replace(/\s*\(Host Demo\)/gi, "")
+      .replace(/\s*\(Guest Demo\)/gi, "")
+      .replace(/\s*\(Host\)/gi, "")
+      .replace(/\s*\(Guest\)/gi, "")
+      .replace(/\s*\(Examiner\s*\/?\s*Guest\)/gi, "")
+      .replace(/\s*Host Demo/gi, "")
+      .replace(/\s*Guest Demo/gi, "")
+      .trim();
+
     return {
       id: raw?._id || raw?.id || "user-id",
-      name: raw?.name || (email === "guest@studiospace.com" ? "Imrita Aksa (Guest Demo)" : "StudioSpace User"),
+      name: cleanName,
       email: raw?.email || "",
       role: raw?.role === "host" || raw?.role === "admin" ? raw.role : "guest",
       avatar,
