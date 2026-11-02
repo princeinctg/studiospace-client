@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { ArrowRight, ShieldCheck, Heart, Camera, Radio, Music, Film } from "lucide-react";
+import { ArrowRight, ShieldCheck, Heart, Camera, Radio, Music, Film, Activity } from "lucide-react";
 import { BrandLogo } from "@/components/ui/BrandLogo";
 
 export function Footer() {
@@ -54,6 +54,12 @@ export function Footer() {
                 <Link href="/explore?category=podcast" className="hover:text-white transition-colors flex items-center gap-1.5">
                   <Radio className="h-3.5 w-3.5 text-orange-brand" />
                   <span>4K Podcast Rooms</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/explore?category=dance" className="hover:text-white transition-colors flex items-center gap-1.5">
+                  <Activity className="h-3.5 w-3.5 text-orange-brand" />
+                  <span>Dance & Movement</span>
                 </Link>
               </li>
             </ul>
