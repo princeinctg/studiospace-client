@@ -1,8 +1,26 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { User, UserRole } from "@/types";
 import { apiRequest } from "@/lib/api";
+
+interface RawUserResponse {
+  _id?: string;
+  id?: string;
+  name?: string;
+  email?: string;
+  role?: string;
+  photoURL?: string;
+  avatar?: string;
+  phone?: string;
+  createdAt?: string;
+}
+
+interface RawAuthResponse extends RawUserResponse {
+  token?: string;
+  message?: string;
+  user?: RawUserResponse;
+}
 
 interface AuthContextType {
   user: User | null;
@@ -11,7 +29,7 @@ interface AuthContextType {
   register: (name: string, email: string, password: string, role?: UserRole, avatar?: string) => Promise<void>;
   googleLogin: (email?: string, name?: string) => Promise<void>;
   initiateGoogleLogin: () => void;
-  logout: () => void;
+  logout: () => Promise<void>;
   isAuthenticated: boolean;
   isHost: boolean;
 }
@@ -22,8 +40,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchSession = async () => {
-    // 1. Check if redirected from Google OAuth with auth_token in URL
+  const normalizeUser = (raw?: RawUserResponse | null): User => {
+    return {
+      id: raw?._id || raw?.id || "user-id",
+      name: raw?.name || "StudioSpace User",
+      email: raw?.email || "",
+      role: raw?.role === "host" || raw?.role === "admin" ? raw.role : "guest",
+      avatar: raw?.photoURL || raw?.avatar || "",
+      phone: raw?.phone || "",
+      createdAt: raw?.createdAt,
+    };
+  };
+
+  const fetchSession = useCallback(async () => {
+    // 1. Check if returning from Google OAuth redirect with token in query params
     if (typeof window !== "undefined") {
       const urlParams = new URLSearchParams(window.location.search);
       const urlToken = urlParams.get("auth_token");
@@ -34,16 +64,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    // 2. Query /auth/me with credentials: "include" (supports HTTPOnly cookie & Bearer token)
+    // 2. Query /auth/me with credentials: "include"
     try {
-      const data = await apiRequest<{ user: User }>("/auth/me");
-      if (data?.user) {
-        setUser(data.user);
-        localStorage.setItem("studiospace_user", JSON.stringify(data.user));
+      const data = await apiRequest<RawAuthResponse>("/auth/me");
+      const rawUser = data?.user || (data?.email ? data : null);
+      if (rawUser) {
+        const u = normalizeUser(rawUser);
+        setUser(u);
+        localStorage.setItem("studiospace_user", JSON.stringify(u));
       } else {
+        setUser(null);
         localStorage.removeItem("studiospace_token");
         localStorage.removeItem("studiospace_user");
-        setUser(null);
       }
     } catch {
       // Offline fallback: check cached user if token exists
@@ -65,22 +97,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchSession();
-  }, []);
+  }, [fetchSession]);
 
   const login = async (email: string, password: string) => {
-    const data = await apiRequest<{ token: string; user: User }>("/auth/login", {
+    const data = await apiRequest<RawAuthResponse>("/auth/login", {
       method: "POST",
       body: JSON.stringify({ email, password }),
     });
 
-    if (data.token) {
+    if (data?.token) {
       localStorage.setItem("studiospace_token", data.token);
-      localStorage.setItem("studiospace_user", JSON.stringify(data.user));
-      setUser(data.user);
+    }
+
+    const rawUser = data?.user || (data?.email ? data : null);
+    if (rawUser) {
+      const u = normalizeUser(rawUser);
+      setUser(u);
+      localStorage.setItem("studiospace_user", JSON.stringify(u));
+    } else {
+      await fetchSession();
     }
   };
 
@@ -91,15 +130,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     role: UserRole = "guest",
     avatar?: string
   ) => {
-    const data = await apiRequest<{ token: string; user: User }>("/auth/register", {
+    const data = await apiRequest<RawAuthResponse>("/auth/register", {
       method: "POST",
-      body: JSON.stringify({ name, email, password, role, avatar }),
+      body: JSON.stringify({
+        name,
+        email,
+        password,
+        role,
+        avatar: avatar || "",
+        photoURL: avatar || "",
+      }),
     });
 
-    if (data.token) {
+    if (data?.token) {
       localStorage.setItem("studiospace_token", data.token);
-      localStorage.setItem("studiospace_user", JSON.stringify(data.user));
-      setUser(data.user);
+    }
+
+    const rawUser = data?.user || (data?.email ? data : null);
+    if (rawUser) {
+      const u = normalizeUser(rawUser);
+      setUser(u);
+      localStorage.setItem("studiospace_user", JSON.stringify(u));
+    } else {
+      // Auto login to obtain HTTPOnly cookie & user profile
+      await login(email, password);
     }
   };
 
@@ -120,7 +174,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    const data = await apiRequest<{ token: string; user: User }>("/auth/google", {
+    const data = await apiRequest<RawAuthResponse>("/auth/google", {
       method: "POST",
       body: JSON.stringify({
         email,
@@ -129,10 +183,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }),
     });
 
-    if (data.token) {
+    if (data?.token) {
       localStorage.setItem("studiospace_token", data.token);
-      localStorage.setItem("studiospace_user", JSON.stringify(data.user));
-      setUser(data.user);
+    }
+
+    const rawUser = data?.user || (data?.email ? data : null);
+    if (rawUser) {
+      const u = normalizeUser(rawUser);
+      setUser(u);
+      localStorage.setItem("studiospace_user", JSON.stringify(u));
+    } else {
+      await fetchSession();
     }
   };
 
