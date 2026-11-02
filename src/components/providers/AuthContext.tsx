@@ -275,7 +275,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           authenticateDemoSession(predefined.user);
           return;
         }
-        throw new Error("Invalid password for demo account.");
+        throw new Error("Invalid password. Please check your credentials.");
       }
 
       // Check Locally Stored Demo Accounts
@@ -285,7 +285,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           authenticateDemoSession(stored.user);
           return;
         }
-        throw new Error("Invalid password for local demo account.");
+        throw new Error("Invalid password. Please check your credentials.");
       }
 
       // If database is unavailable and not matching demo accounts, allow on-the-fly demo login

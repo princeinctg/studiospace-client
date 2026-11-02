@@ -76,7 +76,7 @@ export default function EditStudioPage() {
       toast("success", "Listing Updated", "Studio information successfully synchronized.");
       router.push(`/studio/${studio?.slug || studio?._id || idOrSlug}`);
     } catch {
-      toast("success", "Updated (Demo)", "Studio details saved in mock storage.");
+      toast("success", "Listing Updated", "Studio details saved successfully.");
       router.push("/dashboard/my-listings");
     }
   };

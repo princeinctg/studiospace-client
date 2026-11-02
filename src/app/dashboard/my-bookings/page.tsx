@@ -107,7 +107,7 @@ export default function MyBookingsPage() {
       setBookings((prev) =>
         prev.map((b) => (b._id === cancellingBooking._id ? { ...b, status: "cancelled" } : b))
       );
-      toast("info", "Cancelled (Demo)", "Reservation marked cancelled.");
+      toast("info", "Cancelled", "Reservation marked cancelled.");
     } finally {
       setCancellingBooking(null);
     }

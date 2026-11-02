@@ -53,7 +53,7 @@ export default function LoginPage() {
       toast(
         "info",
         "Temporarily Disabled",
-        "Google Sign-In is temporarily disabled for maintenance. Please use Email/Password or Demo login."
+        "Google Sign-In is temporarily disabled for maintenance. Please use Email/Password to sign in."
       );
       return;
     }
@@ -111,7 +111,7 @@ export default function LoginPage() {
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
               <label className="text-xs font-semibold text-neutral-300">Password</label>
-              <span className="text-[11px] text-orange-brand hover:underline cursor-pointer" title="Password reset is disabled for security demo">
+              <span className="text-[11px] text-orange-brand hover:underline cursor-pointer" title="Password reset is currently unavailable">
                 Forgot Password?
               </span>
             </div>

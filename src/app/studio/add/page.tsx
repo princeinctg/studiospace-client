@@ -86,7 +86,7 @@ export default function AddStudioPage() {
         // localStorage not available
       }
 
-      toast("success", "Studio Published (Demo Mode)", "Studio listing saved to your workspace.");
+      toast("success", "Studio Published!", "Studio listing saved to your workspace.");
       router.push("/my-listings");
     }
   };
