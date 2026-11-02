@@ -2,6 +2,9 @@
 
 > An award-winning creative studio booking platform combining Apple's smooth scroll-triggered storytelling with Lusion's immersive visual motion design.
 
+* **Live Frontend (Vercel)**: https://studiospace-client-nine.vercel.app/
+* **Live Backend API (Render)**: https://studiospace-server.onrender.com/
+
 ---
 
 ## 🎨 1. Unified Brand Color System
