@@ -76,7 +76,7 @@ export default function AddStudioPage() {
       }
 
       toast("success", "Studio Published!", "Your studio is live on the marketplace.");
-      router.push("/dashboard/my-listings");
+      router.push("/my-listings");
     } catch {
       // Offline fallback
       try {
@@ -87,7 +87,7 @@ export default function AddStudioPage() {
       }
 
       toast("success", "Studio Published (Demo Mode)", "Studio listing saved to your workspace.");
-      router.push("/dashboard/my-listings");
+      router.push("/my-listings");
     }
   };
 

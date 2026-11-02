@@ -129,32 +129,15 @@ export function StudioForm({ initialData, onSubmit, isEditing = false }: StudioF
       setImageUrlInput("");
     }
 
+    // Studio Title: Completely unrestricted. Accept ANY non-empty title entered by the user.
     const trimmedTitle = formData.title.trim();
-    if (trimmedTitle.length < 5) {
-      setErrorMsg("Studio title must be at least 5 characters.");
-      return;
-    }
-    const words = trimmedTitle.split(/\s+/).filter(Boolean);
-    if (words.length < 2) {
-      setErrorMsg("Studio title must contain at least 2 words (e.g. 'Brooklyn Daylight Loft').");
-      return;
-    }
-    if (!/^[a-zA-Z0-9\s&',.\-]+$/.test(trimmedTitle)) {
-      setErrorMsg("Studio title may only contain letters, numbers, spaces, and standard punctuation (&, ', -, ,, .).");
-      return;
-    }
-    const hasVowelRegex = /[aeiouyAEIOUY]/;
-    if (!words.every((w) => hasVowelRegex.test(w) || /^[0-9]+$/.test(w))) {
-      setErrorMsg("Studio title cannot consist of meaningless keyboard mash or random consonant sequences.");
-      return;
-    }
-    if (/(.)\1{3,}/.test(trimmedTitle)) {
-      setErrorMsg("Studio title cannot contain repeated character sequences.");
+    if (!trimmedTitle) {
+      setErrorMsg("Studio title is required.");
       return;
     }
 
-    if (formData.pricePerHour < 20 || formData.pricePerHour > 5000) {
-      setErrorMsg("Studio hourly rate must be between $20 and $5,000 per hour.");
+    if (formData.pricePerHour < 1 || formData.pricePerHour > 10000) {
+      setErrorMsg("Studio hourly rate must be between $1 and $10,000 per hour.");
       return;
     }
 
@@ -178,14 +161,16 @@ export function StudioForm({ initialData, onSubmit, isEditing = false }: StudioF
       return;
     }
 
-    if (formData.description.trim().length < 20) {
-      setErrorMsg("Detailed overview must be at least 20 characters.");
+    if (!formData.description.trim()) {
+      setErrorMsg("Studio description is required.");
       return;
     }
 
+    // Default image fallback if user submitted without uploading an image
     if (currentImages.length === 0) {
-      setErrorMsg("Please provide at least one image URL for your studio.");
-      return;
+      currentImages = [
+        "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1200&q=85",
+      ];
     }
 
     if (formData.amenities.length === 0) {

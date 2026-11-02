@@ -13,7 +13,7 @@ import { UserRole } from "@/types";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { register: registerUser } = useAuth();
+  const { register: registerUser, initiateGoogleLogin, isGoogleAuthEnabled } = useAuth();
   const { toast } = useToast();
 
   const [name, setName] = useState("");
@@ -49,11 +49,15 @@ export default function RegisterPage() {
   };
 
   const handleGoogleAuth = () => {
-    toast(
-      "info",
-      "Temporarily Disabled",
-      "Google Sign-Up is temporarily disabled for maintenance. Please use Email and Password to create your account."
-    );
+    if (!isGoogleAuthEnabled) {
+      toast(
+        "info",
+        "Temporarily Disabled",
+        "Google Sign-Up is temporarily disabled for maintenance. Please use Email and Password to create your account."
+      );
+      return;
+    }
+    initiateGoogleLogin();
   };
 
   return (
@@ -186,16 +190,26 @@ export default function RegisterPage() {
 
           <button
             type="button"
-            disabled
+            disabled={!isGoogleAuthEnabled}
             onClick={handleGoogleAuth}
-            className="w-full py-3 px-4 rounded-xl border border-white/10 bg-white/5 text-xs text-neutral-400 font-semibold flex items-center justify-center gap-2.5 cursor-not-allowed opacity-60 shadow-sm transition-all"
-            title="Google Sign-Up is temporarily disabled for maintenance"
+            className={`w-full py-3 px-4 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2.5 shadow-sm transition-all ${
+              isGoogleAuthEnabled
+                ? "border-white/15 bg-white/5 hover:bg-white/10 text-white hover:border-orange-brand/50 cursor-pointer"
+                : "border-white/10 bg-white/5 text-neutral-400 cursor-not-allowed opacity-60"
+            }`}
+            title={
+              isGoogleAuthEnabled
+                ? "Sign up with Google"
+                : "Google Sign-Up is temporarily disabled for maintenance"
+            }
           >
-            <GoogleLogo className="h-4 w-4 shrink-0 grayscale opacity-60" />
+            <GoogleLogo className={`h-4 w-4 shrink-0 ${!isGoogleAuthEnabled ? "grayscale opacity-60" : ""}`} />
             <span>Sign up with Google</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-neutral-400 font-normal">
-              Temporarily Disabled
-            </span>
+            {!isGoogleAuthEnabled && (
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-neutral-400 font-normal">
+                Temporarily Disabled
+              </span>
+            )}
           </button>
         </div>
 

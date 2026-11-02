@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { User, UserRole } from "@/types";
 import { apiRequest } from "@/lib/api";
+import { GOOGLE_OAUTH_CONFIG } from "@/lib/auth-config";
 
 interface RawUserResponse {
   _id?: string;
@@ -82,8 +83,9 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string, role?: UserRole, avatar?: string) => Promise<void>;
   loginDemo: (role: "host" | "guest") => Promise<void>;
-  googleLogin: () => Promise<void>;
+  googleLogin: (credential?: string) => Promise<void>;
   initiateGoogleLogin: () => void;
+  isGoogleAuthEnabled: boolean;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
   isHost: boolean;
@@ -340,15 +342,55 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  /**
+   * Initiates Google OAuth 2.0 Authorization Code flow.
+   * Redirects user to backend `/auth/google` which forwards to Google Accounts.
+   * Can be re-enabled at any time via GOOGLE_OAUTH_CONFIG or NEXT_PUBLIC_ENABLE_GOOGLE_AUTH=true.
+   */
   const initiateGoogleLogin = () => {
-    // Temporarily disabled to prevent OAuth errors
-    console.warn("[Auth] Google Sign-In is temporarily disabled for maintenance.");
+    if (!GOOGLE_OAUTH_CONFIG.ENABLED) {
+      console.warn("[Auth] Google Sign-In is temporarily disabled in configuration.");
+      return;
+    }
+    const returnTo = typeof window !== "undefined" ? window.location.origin : "";
+    const redirectUrl = `${GOOGLE_OAUTH_CONFIG.AUTH_ENDPOINT}${returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : ""}`;
+    window.location.href = redirectUrl;
   };
 
-  const googleLogin = async () => {
-    throw new Error(
-      "Google Sign-In is temporarily disabled. Please use standard Email/Password authentication."
-    );
+  /**
+   * Completes direct Google Authentication with verified credential ID token.
+   * Verifies against Google and updates active session.
+   */
+  const googleLogin = async (credential?: string) => {
+    if (!GOOGLE_OAUTH_CONFIG.ENABLED) {
+      throw new Error(
+        "Google Sign-In is temporarily disabled. Please use standard Email/Password authentication."
+      );
+    }
+
+    if (!credential) {
+      initiateGoogleLogin();
+      return;
+    }
+
+    const data = await apiRequest<RawAuthResponse>("/auth/google", {
+      method: "POST",
+      body: JSON.stringify({ credential }),
+    });
+
+    if (data?.token) {
+      localStorage.setItem("studiospace_token", data.token);
+      localStorage.setItem("studiospace_auth_mode", "production");
+    }
+
+    const rawUser = data?.user || (data?.email ? data : null);
+    if (rawUser) {
+      const u = normalizeUser(rawUser);
+      setUser(u);
+      localStorage.setItem("studiospace_user", JSON.stringify(u));
+    } else {
+      await fetchSession();
+    }
   };
 
   const logout = async () => {
@@ -376,6 +418,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         loginDemo,
         googleLogin,
         initiateGoogleLogin,
+        isGoogleAuthEnabled: GOOGLE_OAUTH_CONFIG.ENABLED,
         logout,
         isAuthenticated: !!user,
         isHost: user?.role === "host" || user?.role === "admin",
