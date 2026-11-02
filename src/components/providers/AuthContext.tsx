@@ -31,7 +31,7 @@ export const PREDEFINED_DEMO_ACCOUNTS: Record<string, { user: User; password: st
       name: "Imdatul Hoque (Host Demo)",
       email: "host@studiospace.com",
       role: "host",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
       phone: "+1 (555) 019-2834",
       isDemo: true,
     },
@@ -43,7 +43,7 @@ export const PREDEFINED_DEMO_ACCOUNTS: Record<string, { user: User; password: st
       name: "Imrita Aksa (Guest Demo)",
       email: "guest@studiospace.com",
       role: "guest",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
       phone: "+1 (555) 018-9271",
       isDemo: true,
     },
@@ -260,7 +260,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           name: cleanEmail.split("@")[0].replace(/[._-]/g, " "),
           email: cleanEmail,
           role: cleanEmail.includes("host") ? "host" : "guest",
-          avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+          avatar: cleanEmail.includes("host")
+            ? "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80"
+            : "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
           phone: "+1 (555) 019-2834",
           isDemo: true,
         };
