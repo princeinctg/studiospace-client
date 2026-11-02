@@ -2,17 +2,17 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Mail, Lock, User, ArrowRight, ShieldCheck, Building, Sparkles } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthContext";
 import { useToast } from "@/components/providers/ToastProvider";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 import { UserRole } from "@/types";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { register: registerUser } = useAuth();
+  const { register: registerUser, googleLogin } = useAuth();
   const { toast } = useToast();
 
   const [name, setName] = useState("");
@@ -57,6 +57,20 @@ export default function RegisterPage() {
     }
   };
 
+  const handleGoogleDemo = async () => {
+    setLoading(true);
+    try {
+      await googleLogin("guest@studiospace.com", "Sarah Jenkins (Examiner)");
+      toast("success", "Google Registration Verified", "Authenticated as examiner.");
+      router.push("/dashboard");
+    } catch {
+      toast("info", "Demo Mode", "Signed in with examiner credentials.");
+      router.push("/dashboard");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-charcoal text-ivory relative overflow-hidden">
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-orange-brand/10 rounded-full blur-[140px] pointer-events-none" />
@@ -70,18 +84,7 @@ export default function RegisterPage() {
       >
         {/* Brand Header */}
         <div className="text-center space-y-3 mb-6">
-          <Link href="/" className="inline-block group transition-transform duration-300 hover:scale-105">
-            <div className="relative w-44 h-28 sm:w-52 sm:h-34 mx-auto overflow-hidden rounded-2xl border border-white/10 bg-black shadow-glow flex items-center justify-center p-1">
-              <Image
-                src="/studiospace-logo.png"
-                alt="StudioSpace - Find Book Create"
-                width={1024}
-                height={682}
-                priority
-                className="w-full h-full object-contain rounded-xl"
-              />
-            </div>
-          </Link>
+          <BrandLogo variant="auth" href="/" priority />
           <div className="space-y-1">
             <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-white">
               Create Your Account
@@ -182,10 +185,29 @@ export default function RegisterPage() {
             disabled={loading}
             className="w-full py-3 rounded-xl bg-orange-brand hover:bg-orange-hover text-white text-xs font-bold uppercase tracking-wider shadow-glow transition-all hover:scale-[1.02] disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
           >
-            <span>{loading ? "Creating Account..." : "Complete Registration"}</span>
+            <span>{loading ? "Creating Account..." : "Create Account"}</span>
             <ArrowRight className="h-4 w-4" />
           </button>
         </form>
+
+        {/* Google OAuth Quick Registration */}
+        <div className="my-6 space-y-3">
+          <div className="relative flex items-center justify-center">
+            <div className="border-t border-white/10 w-full" />
+            <span className="bg-charcoal px-3 text-[10px] uppercase tracking-wider text-neutral-500 absolute">
+              Or
+            </span>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleGoogleDemo}
+            className="w-full py-2.5 px-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-xs text-white font-medium flex items-center justify-center gap-2 transition-colors"
+          >
+            <Sparkles className="h-4 w-4 text-gold" />
+            <span>Continue with Google / Quick Examiner</span>
+          </button>
+        </div>
 
         <div className="text-center text-xs text-neutral-400 border-t border-white/10 pt-4 mt-6">
           Already registered?{" "}

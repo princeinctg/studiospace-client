@@ -2,12 +2,12 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Mail, Lock, Sparkles, ArrowRight, ShieldCheck, UserCheck } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthContext";
 import { useToast } from "@/components/providers/ToastProvider";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -75,18 +75,7 @@ export default function LoginPage() {
       >
         {/* Brand Header */}
         <div className="text-center space-y-3 mb-6">
-          <Link href="/" className="inline-block group transition-transform duration-300 hover:scale-105">
-            <div className="relative w-48 h-32 sm:w-56 sm:h-36 mx-auto overflow-hidden rounded-2xl border border-white/10 bg-black shadow-glow flex items-center justify-center p-1">
-              <Image
-                src="/studiospace-logo.png"
-                alt="StudioSpace - Find Book Create"
-                width={1024}
-                height={682}
-                priority
-                className="w-full h-full object-contain rounded-xl"
-              />
-            </div>
-          </Link>
+          <BrandLogo variant="auth" href="/" priority />
           <div className="space-y-1">
             <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-white">
               Welcome to StudioSpace

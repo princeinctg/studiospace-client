@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import {
-  Sparkles,
   Menu,
   X,
   Sun,
@@ -19,6 +18,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { useAuth } from "@/components/providers/AuthContext";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -59,26 +59,7 @@ export function Navbar() {
       >
         <div className="container mx-auto flex items-center justify-between">
           {/* Brand Logo */}
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-charcoal border border-border shadow-md overflow-hidden group-hover:border-orange-brand/50 transition-colors">
-              <span className="font-display text-xl font-bold text-orange-brand tracking-tighter">
-                S
-              </span>
-              <span className="font-display text-xl font-bold text-ivory tracking-tighter -ml-1">
-                S
-              </span>
-              <div className="absolute inset-0 bg-gradient-to-tr from-orange-brand/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-display text-lg font-bold tracking-tight text-foreground flex items-center gap-1.5">
-                StudioSpace
-                <Sparkles className="h-3.5 w-3.5 text-gold animate-pulse" />
-              </span>
-              <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold -mt-1">
-                Cinematic Spaces
-              </span>
-            </div>
-          </Link>
+          <BrandLogo variant="navbar" href="/" priority />
 
           {/* Desktop Nav Links */}
           <nav className="hidden md:flex items-center gap-1.5 p-1 rounded-full bg-secondary/60 backdrop-blur-md border border-border/60">
@@ -246,6 +227,12 @@ export function Navbar() {
             className="fixed inset-x-0 top-[72px] z-30 md:hidden bg-card/95 backdrop-blur-2xl border-b border-border shadow-cinematic px-6 py-6"
           >
             <div className="flex flex-col gap-3">
+              <div className="flex items-center justify-between pb-3 border-b border-border/60 mb-1">
+                <BrandLogo variant="compact" href="/" />
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-gold">
+                  Find • Book • Create
+                </span>
+              </div>
               {navLinks.map((link) => (
                 <Link
                   key={link.href}

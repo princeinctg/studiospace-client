@@ -2,7 +2,8 @@
 
 import React from "react";
 import Link from "next/link";
-import { Sparkles, ArrowRight, ShieldCheck, Heart, Camera, Radio, Music, Film } from "lucide-react";
+import { ArrowRight, ShieldCheck, Heart, Camera, Radio, Music, Film } from "lucide-react";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 
 export function Footer() {
   return (
@@ -15,16 +16,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-white/10">
           {/* Brand Col */}
           <div className="lg:col-span-2 space-y-4">
-            <Link href="/" className="flex items-center gap-2.5">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-black border border-white/20 shadow-md">
-                <span className="font-display text-xl font-bold text-orange-brand">S</span>
-                <span className="font-display text-xl font-bold text-white -ml-1">S</span>
-              </div>
-              <span className="font-display text-xl font-bold tracking-tight text-white flex items-center gap-1.5">
-                StudioSpace
-                <Sparkles className="h-4 w-4 text-gold" />
-              </span>
-            </Link>
+            <BrandLogo variant="footer" href="/" />
             <p className="text-sm text-neutral-400 leading-relaxed max-w-sm">
               The premier marketplace connecting directors, photographers, audio engineers, and creators with world-class production spaces worldwide.
             </p>
