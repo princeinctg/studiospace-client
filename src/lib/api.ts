@@ -35,7 +35,13 @@ export async function apiRequest<T = unknown>(
   const data = await res.json().catch(() => ({}));
 
   if (!res.ok) {
-    throw new Error(data.error || `Request failed with status ${res.status}`);
+    const detailMsg =
+      Array.isArray(data?.details) && data.details.length > 0
+        ? data.details.join(". ")
+        : data?.details;
+    const errorMsg =
+      detailMsg || data?.error || data?.message || `Request failed with status ${res.status}`;
+    throw new Error(errorMsg);
   }
 
   return data as T;

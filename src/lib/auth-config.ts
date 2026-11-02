@@ -19,8 +19,8 @@ import { API_BASE_URL } from "./api";
  *    environment variables, or toggle ENABLED below to true.
  */
 export const GOOGLE_OAUTH_CONFIG = {
-  // Feature toggle: Keep false while Google Cloud Console redirect URI is pending update
-  ENABLED: process.env.NEXT_PUBLIC_ENABLE_GOOGLE_AUTH === "true",
+  // Enabled: Real Google OAuth 2.0 flow is active
+  ENABLED: true,
 
   // Google Cloud OAuth Client ID (studiospace-client-513508)
   CLIENT_ID:
