@@ -7,7 +7,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { Studio } from "@/types";
-import { apiRequest } from "@/lib/api";
+import { apiRequest, normalizeStudio } from "@/lib/api";
 import { formatCurrency } from "@/lib/utils";
 import { useAuth } from "@/components/providers/AuthContext";
 import { useToast } from "@/components/providers/ToastProvider";
@@ -33,9 +33,10 @@ export default function MyListingsPage() {
   const fetchMyStudios = async () => {
     setLoading(true);
     try {
-      const data = await apiRequest<{ studios: Studio[] }>("/studios/my-listings");
-      if (data?.studios) {
-        setStudios(data.studios);
+      const data = await apiRequest<Record<string, unknown> | unknown[]>("/studios/my-listings");
+      const raw = Array.isArray(data) ? data : (data as { studios?: unknown[] })?.studios;
+      if (Array.isArray(raw)) {
+        setStudios(raw.map(normalizeStudio));
       }
     } catch {
       // Fallback demo studios for host

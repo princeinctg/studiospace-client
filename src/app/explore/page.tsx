@@ -7,7 +7,7 @@ import { Footer } from "@/components/layout/Footer";
 import { StudioCard } from "@/components/studios/StudioCard";
 import { StudioFilters } from "@/components/studios/StudioFilters";
 import { Studio } from "@/types";
-import { apiRequest } from "@/lib/api";
+import { apiRequest, normalizeStudio } from "@/lib/api";
 import { Search, Sparkles, AlertCircle } from "lucide-react";
 
 const fallbackExploreStudios: Studio[] = [
@@ -184,9 +184,10 @@ function ExploreContent() {
         if (filters.maxPrice) queryParams.set("maxPrice", filters.maxPrice);
         if (filters.sort) queryParams.set("sort", filters.sort);
 
-        const data = await apiRequest<{ studios: Studio[] }>(`/studios?${queryParams.toString()}`);
-        if (data?.studios) {
-          setStudios(data.studios);
+        const data = await apiRequest<Record<string, unknown> | unknown[]>(`/studios?${queryParams.toString()}`);
+        const rawList = Array.isArray(data) ? data : (data as { studios?: unknown[] })?.studios;
+        if (Array.isArray(rawList)) {
+          setStudios(rawList.map(normalizeStudio));
         }
       } catch {
         // Filter fallback dataset locally if backend server is not yet attached

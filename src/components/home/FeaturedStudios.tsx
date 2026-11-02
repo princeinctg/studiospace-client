@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { Sparkles, ArrowRight, Compass } from "lucide-react";
 import { Studio } from "@/types";
 import { StudioCard } from "@/components/studios/StudioCard";
-import { apiRequest } from "@/lib/api";
+import { apiRequest, normalizeStudio } from "@/lib/api";
 
 const fallbackFeatured: Studio[] = [
   {
@@ -146,9 +146,26 @@ export function FeaturedStudios() {
   useEffect(() => {
     async function loadFeatured() {
       try {
-        const data = await apiRequest<{ studios: Studio[] }>("/studios/featured");
-        if (data?.studios && data.studios.length > 0) {
-          setStudios(data.studios);
+        let list: Studio[] = [];
+        try {
+          const data = await apiRequest<Record<string, unknown> | unknown[]>("/studios/featured");
+          const raw = Array.isArray(data) ? data : (data as { studios?: unknown[] })?.studios;
+          if (Array.isArray(raw) && raw.length > 0) {
+            list = raw.map(normalizeStudio);
+          }
+        } catch {
+          // If /studios/featured fails on legacy backend, fetch from /studios
+          const data = await apiRequest<Record<string, unknown> | unknown[]>("/studios");
+          const raw = Array.isArray(data) ? data : (data as { studios?: unknown[] })?.studios;
+          if (Array.isArray(raw) && raw.length > 0) {
+            const normalized = raw.map(normalizeStudio);
+            const featuredOnly = normalized.filter((s: Studio) => s.featured);
+            list = featuredOnly.length > 0 ? featuredOnly : normalized.slice(0, 6);
+          }
+        }
+
+        if (list.length > 0) {
+          setStudios(list);
         }
       } catch {
         // Keeps fallback data

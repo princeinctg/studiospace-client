@@ -32,9 +32,10 @@ export default function MyBookingsPage() {
   const fetchBookings = async () => {
     setLoading(true);
     try {
-      const data = await apiRequest<{ bookings: Booking[] }>("/bookings/my-bookings");
-      if (data?.bookings) {
-        setBookings(data.bookings);
+      const data = await apiRequest<Record<string, unknown> | unknown[]>("/bookings/my-bookings");
+      const raw = Array.isArray(data) ? data : (data as { bookings?: Booking[] })?.bookings;
+      if (Array.isArray(raw)) {
+        setBookings(raw as Booking[]);
       }
     } catch {
       // Fallback demo bookings for examiner preview

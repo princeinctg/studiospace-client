@@ -10,7 +10,7 @@ import { StudioGallery } from "@/components/studios/StudioGallery";
 import { AmenitiesList } from "@/components/studios/AmenitiesList";
 import { BookingModal } from "@/components/booking/BookingModal";
 import { Studio } from "@/types";
-import { apiRequest } from "@/lib/api";
+import { apiRequest, normalizeStudio } from "@/lib/api";
 import { formatCurrency } from "@/lib/utils";
 import { useBookmarks } from "@/components/providers/BookmarkContext";
 import {
@@ -80,9 +80,10 @@ export default function StudioDetailPage() {
   useEffect(() => {
     async function fetchStudio() {
       try {
-        const data = await apiRequest<{ studio: Studio }>(`/studios/${idOrSlug}`);
-        if (data?.studio) {
-          setStudio(data.studio);
+        const data = await apiRequest<Record<string, unknown>>(`/studios/${idOrSlug}`);
+        const rawStudio = (data?.studio as Record<string, unknown>) || data;
+        if (rawStudio && (rawStudio._id || rawStudio.title)) {
+          setStudio(normalizeStudio(rawStudio));
         }
       } catch {
         // Fallback to demo
