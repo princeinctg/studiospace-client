@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Mail, Lock, Sparkles, ArrowRight, ShieldCheck, UserCheck } from "lucide-react";
@@ -73,19 +74,27 @@ export default function LoginPage() {
         className="w-full max-w-md rounded-3xl border border-white/10 bg-black/50 backdrop-blur-2xl p-8 sm:p-10 shadow-cinematic relative z-10"
       >
         {/* Brand Header */}
-        <div className="text-center space-y-2 mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 mb-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-charcoal border border-white/20 shadow-md">
-              <span className="font-display text-xl font-bold text-orange-brand">S</span>
-              <span className="font-display text-xl font-bold text-white -ml-1">S</span>
+        <div className="text-center space-y-3 mb-6">
+          <Link href="/" className="inline-block group transition-transform duration-300 hover:scale-105">
+            <div className="relative w-48 h-32 sm:w-56 sm:h-36 mx-auto overflow-hidden rounded-2xl border border-white/10 bg-black shadow-glow flex items-center justify-center p-1">
+              <Image
+                src="/studiospace-logo.png"
+                alt="StudioSpace - Find Book Create"
+                width={1024}
+                height={682}
+                priority
+                className="w-full h-full object-contain rounded-xl"
+              />
             </div>
           </Link>
-          <h1 className="font-display text-3xl font-bold tracking-tight text-white">
-            Welcome to StudioSpace
-          </h1>
-          <p className="text-xs text-neutral-400">
-            Sign in to manage studio listings, bookings, and creative schedules.
-          </p>
+          <div className="space-y-1">
+            <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-white">
+              Welcome to StudioSpace
+            </h1>
+            <p className="text-xs text-neutral-400">
+              Sign in to manage studio listings, bookings, and creative schedules.
+            </p>
+          </div>
         </div>
 
         {/* Error banner */}
