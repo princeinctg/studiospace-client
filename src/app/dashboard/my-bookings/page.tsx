@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -22,12 +23,19 @@ import {
 } from "lucide-react";
 
 export default function MyBookingsPage() {
+  const router = useRouter();
   const { isAuthenticated, loading: authLoading } = useAuth();
   const { toast } = useToast();
 
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [cancellingBooking, setCancellingBooking] = useState<Booking | null>(null);
+
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push("/login?redirect=/dashboard/my-bookings");
+    }
+  }, [authLoading, isAuthenticated, router]);
 
   const fetchBookings = async () => {
     setLoading(true);
@@ -112,6 +120,25 @@ export default function MyBookingsPage() {
       setCancellingBooking(null);
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background text-foreground">
+        <Navbar />
+        <main className="flex-1 pt-24 pb-20 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <div className="h-8 w-8 rounded-full border-2 border-orange-brand border-t-transparent animate-spin" />
+            <p className="text-xs text-muted-foreground animate-pulse">Loading bookings session...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">

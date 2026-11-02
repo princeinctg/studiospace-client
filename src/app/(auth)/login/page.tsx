@@ -12,13 +12,23 @@ import { GoogleLogo } from "@/components/ui/GoogleLogo";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, initiateGoogleLogin, isGoogleAuthEnabled } = useAuth();
+  const { login, initiateGoogleLogin, isGoogleAuthEnabled, isAuthenticated, loading: authLoading } = useAuth();
   const { toast } = useToast();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+
+  React.useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      const redirectTarget =
+        typeof window !== "undefined"
+          ? new URLSearchParams(window.location.search).get("redirect") || "/dashboard"
+          : "/dashboard";
+      router.push(redirectTarget.startsWith("/") ? redirectTarget : "/dashboard");
+    }
+  }, [authLoading, isAuthenticated, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +38,11 @@ export default function LoginPage() {
     try {
       await login(email, password);
       toast("success", "Welcome back!", "Successfully signed in to StudioSpace.");
-      router.push("/dashboard");
+      const redirectTarget =
+        typeof window !== "undefined"
+          ? new URLSearchParams(window.location.search).get("redirect") || "/dashboard"
+          : "/dashboard";
+      router.push(redirectTarget.startsWith("/") ? redirectTarget : "/dashboard");
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Invalid credentials.";
       setErrorMsg(msg);

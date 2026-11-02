@@ -141,11 +141,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   };
 
+  const setClientCookie = (token: string) => {
+    if (typeof document !== "undefined") {
+      document.cookie = `studiospace_token=${encodeURIComponent(token)}; path=/; max-age=604800; SameSite=Lax`;
+    }
+  };
+
+  const clearClientCookie = () => {
+    if (typeof document !== "undefined") {
+      document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      document.cookie = "studiospace_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    }
+  };
+
   const authenticateDemoSession = (demoUser: User) => {
     const demoToken = "demo-token-" + Date.now();
     localStorage.setItem("studiospace_token", demoToken);
     localStorage.setItem("studiospace_user", JSON.stringify(demoUser));
     localStorage.setItem("studiospace_auth_mode", "demo");
+    setClientCookie(demoToken);
     setUser(demoUser);
   };
 
@@ -161,11 +175,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (urlToken) {
       localStorage.setItem("studiospace_token", urlToken);
       localStorage.setItem("studiospace_auth_mode", "production");
+      setClientCookie(urlToken);
       const cleanUrl = window.location.pathname;
       window.history.replaceState({}, document.title, cleanUrl);
     }
 
-    const token = localStorage.getItem("studiospace_token");
+    let token = localStorage.getItem("studiospace_token");
+    if (!token && typeof document !== "undefined") {
+      const match = document.cookie.match(/(?:^|;\s*)(?:studiospace_token|token)=([^;]*)/);
+      if (match && match[1]) {
+        token = decodeURIComponent(match[1]);
+        localStorage.setItem("studiospace_token", token);
+      }
+    }
     const authMode = localStorage.getItem("studiospace_auth_mode");
 
     // 2. Demo Mode persistence: Skip /auth/me call to stay independent of MongoDB
@@ -246,6 +268,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (data?.token) {
         localStorage.setItem("studiospace_token", data.token);
         localStorage.setItem("studiospace_auth_mode", "production");
+        setClientCookie(data.token);
       }
 
       const rawUser = data?.user || (data?.email ? data : null);
@@ -336,6 +359,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (data?.token) {
         localStorage.setItem("studiospace_token", data.token);
         localStorage.setItem("studiospace_auth_mode", "production");
+        setClientCookie(data.token);
       }
 
       const rawUser = data?.user || (data?.email ? data : null);
@@ -426,6 +450,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (data?.token) {
       localStorage.setItem("studiospace_token", data.token);
       localStorage.setItem("studiospace_auth_mode", "production");
+      setClientCookie(data.token);
     }
 
     const rawUser = data?.user || (data?.email ? data : null);
@@ -450,6 +475,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem("studiospace_token");
     localStorage.removeItem("studiospace_user");
     localStorage.removeItem("studiospace_auth_mode");
+    clearClientCookie();
     setUser(null);
   };
 

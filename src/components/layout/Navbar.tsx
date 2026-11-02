@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import {
@@ -21,12 +21,20 @@ import { useAuth } from "@/components/providers/AuthContext";
 import { BrandLogo } from "@/components/ui/BrandLogo";
 
 export function Navbar() {
+  const router = useRouter();
   const pathname = usePathname();
   const { resolvedTheme, toggleTheme } = useTheme();
   const { user, isAuthenticated, logout } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+
+  const handleLogout = async () => {
+    setUserDropdownOpen(false);
+    setMobileMenuOpen(false);
+    await logout();
+    router.push("/login");
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -183,7 +191,7 @@ export function Navbar() {
 
                       <div className="border-t border-border/60 my-1 pt-1">
                         <button
-                          onClick={logout}
+                          onClick={handleLogout}
                           className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-red-400 hover:bg-red-500/10 transition-colors"
                         >
                           <LogOut className="h-4 w-4" />
@@ -253,6 +261,68 @@ export function Navbar() {
                 <Plus className="h-4 w-4 text-orange-brand" />
                 <span>List a Studio</span>
               </Link>
+
+              {/* Mobile Auth Section */}
+              {isAuthenticated && user ? (
+                <div className="pt-3 border-t border-border/60 mt-2 flex flex-col gap-2">
+                  <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-secondary/50">
+                    <div className="h-8 w-8 rounded-full bg-orange-brand/20 border border-orange-brand/40 text-orange-brand flex items-center justify-center text-xs font-bold overflow-hidden">
+                      {user.avatar ? (
+                        <Image
+                          src={user.avatar}
+                          alt={user.name}
+                          width={32}
+                          height={32}
+                          className="h-full w-full object-cover"
+                          unoptimized
+                        />
+                      ) : (
+                        user.name.charAt(0)
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-bold truncate text-foreground">{user.name}</div>
+                      <div className="text-[10px] text-muted-foreground truncate">{user.email}</div>
+                    </div>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-forest/20 text-emerald-400 border border-forest/40">
+                      {user.role}
+                    </span>
+                  </div>
+
+                  <Link
+                    href="/dashboard/my-listings"
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium hover:bg-secondary/60 text-foreground transition-colors"
+                  >
+                    <Building className="h-4 w-4 text-gold" />
+                    <span>My Studios</span>
+                  </Link>
+
+                  <Link
+                    href="/dashboard/my-bookings"
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium hover:bg-secondary/60 text-foreground transition-colors"
+                  >
+                    <Calendar className="h-4 w-4 text-emerald-400" />
+                    <span>My Bookings</span>
+                  </Link>
+
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium text-red-400 hover:bg-red-500/10 transition-colors"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="pt-3 border-t border-border/60 mt-2">
+                  <Link
+                    href="/login"
+                    className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-orange-brand hover:bg-orange-hover text-white text-sm font-semibold shadow-glow transition-all"
+                  >
+                    Sign In
+                  </Link>
+                </div>
+              )}
             </div>
           </motion.div>
         )}

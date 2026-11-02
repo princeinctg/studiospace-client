@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -23,12 +24,19 @@ import {
 } from "lucide-react";
 
 export default function MyListingsPage() {
+  const router = useRouter();
   const { isAuthenticated, loading: authLoading } = useAuth();
   const { toast } = useToast();
 
   const [studios, setStudios] = useState<Studio[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteModalStudio, setDeleteModalStudio] = useState<Studio | null>(null);
+
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push("/login?redirect=/dashboard/my-listings");
+    }
+  }, [authLoading, isAuthenticated, router]);
 
   const fetchMyStudios = async () => {
     setLoading(true);
@@ -117,6 +125,25 @@ export default function MyListingsPage() {
       setDeleteModalStudio(null);
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background text-foreground">
+        <Navbar />
+        <main className="flex-1 pt-24 pb-20 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <div className="h-8 w-8 rounded-full border-2 border-orange-brand border-t-transparent animate-spin" />
+            <p className="text-xs text-muted-foreground animate-pulse">Loading studio listings session...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
