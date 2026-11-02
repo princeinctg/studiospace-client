@@ -82,7 +82,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string, role?: UserRole, avatar?: string) => Promise<void>;
   loginDemo: (role: "host" | "guest") => Promise<void>;
-  googleLogin: (email?: string, name?: string) => Promise<void>;
+  googleLogin: () => Promise<void>;
   initiateGoogleLogin: () => void;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
@@ -345,34 +345,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     console.warn("[Auth] Google Sign-In is temporarily disabled for maintenance.");
   };
 
-  const googleLogin = async (email?: string, name?: string) => {
-    if (!email || !name) {
-      initiateGoogleLogin();
-      return;
-    }
-
-    const data = await apiRequest<RawAuthResponse>("/auth/google", {
-      method: "POST",
-      body: JSON.stringify({
-        email,
-        name,
-        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
-      }),
-    });
-
-    if (data?.token) {
-      localStorage.setItem("studiospace_token", data.token);
-      localStorage.setItem("studiospace_auth_mode", "production");
-    }
-
-    const rawUser = data?.user || (data?.email ? data : null);
-    if (rawUser) {
-      const u = normalizeUser(rawUser);
-      setUser(u);
-      localStorage.setItem("studiospace_user", JSON.stringify(u));
-    } else {
-      await fetchSession();
-    }
+  const googleLogin = async () => {
+    throw new Error(
+      "Google Sign-In is temporarily disabled. Please use standard Email/Password authentication."
+    );
   };
 
   const logout = async () => {
