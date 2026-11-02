@@ -114,8 +114,8 @@ export default function LoginPage() {
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
               <label className="text-xs font-semibold text-neutral-300">Password</label>
-              <span className="text-[11px] text-orange-brand hover:underline cursor-pointer">
-                Forgot?
+              <span className="text-[11px] text-orange-brand hover:underline cursor-pointer" title="Password reset is disabled for security demo">
+                Forgot Password?
               </span>
             </div>
             <div className="relative">

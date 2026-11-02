@@ -24,6 +24,23 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg("");
+
+    if (password.length < 6) {
+      setErrorMsg("Password must be at least 6 characters.");
+      toast("error", "Validation Error", "Password must be at least 6 characters.");
+      return;
+    }
+    if (!/[A-Z]/.test(password)) {
+      setErrorMsg("Password must contain at least one uppercase letter.");
+      toast("error", "Validation Error", "Password must contain at least one uppercase letter.");
+      return;
+    }
+    if (!/[a-z]/.test(password)) {
+      setErrorMsg("Password must contain at least one lowercase letter.");
+      toast("error", "Validation Error", "Password must contain at least one lowercase letter.");
+      return;
+    }
+
     setLoading(true);
 
     try {
