@@ -12,24 +12,19 @@ export const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "",
   authDomain:
     process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ||
-    (process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
-      ? `${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID}.firebaseapp.com`
-      : ""),
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "",
+    `${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "studiospace-client-513508"}.firebaseapp.com`,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "studiospace-client-513508",
   storageBucket:
     process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET ||
-    (process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
-      ? `${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID}.appspot.com`
-      : ""),
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "",
+    `${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "studiospace-client-513508"}.appspot.com`,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "199695232756",
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "",
 };
 
 export function isFirebaseConfigured(): boolean {
   return Boolean(
     process.env.NEXT_PUBLIC_FIREBASE_API_KEY &&
-      (process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ||
-        process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN)
+      process.env.NEXT_PUBLIC_FIREBASE_API_KEY.trim().length > 0
   );
 }
 
