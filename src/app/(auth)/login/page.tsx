@@ -75,7 +75,7 @@ export default function LoginPage() {
     }
   };
 
-  const handleGoogleAuth = () => {
+  const handleGoogleAuth = async () => {
     if (!isGoogleAuthEnabled) {
       toast(
         "info",
@@ -88,7 +88,17 @@ export default function LoginPage() {
       typeof window !== "undefined"
         ? new URLSearchParams(window.location.search).get("redirect") || "/dashboard"
         : "/dashboard";
-    initiateGoogleLogin("guest", redirectTarget, "login");
+    try {
+      setLoading(true);
+      setErrorMsg("");
+      await initiateGoogleLogin("guest", redirectTarget, "login");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Google authentication failed";
+      setErrorMsg(msg);
+      toast("error", "Sign In Failed", msg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

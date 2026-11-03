@@ -61,7 +61,7 @@ export default function RegisterPage() {
     }
   };
 
-  const handleGoogleAuth = () => {
+  const handleGoogleAuth = async () => {
     if (!isGoogleAuthEnabled) {
       toast(
         "info",
@@ -74,7 +74,17 @@ export default function RegisterPage() {
       typeof window !== "undefined"
         ? new URLSearchParams(window.location.search).get("redirect") || "/dashboard"
         : "/dashboard";
-    initiateGoogleLogin(role, redirectTarget, "register");
+    try {
+      setLoading(true);
+      setErrorMsg("");
+      await initiateGoogleLogin(role, redirectTarget, "register");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Google registration failed";
+      setErrorMsg(msg);
+      toast("error", "Sign Up Failed", msg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
