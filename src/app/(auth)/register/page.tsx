@@ -218,11 +218,12 @@ export default function RegisterPage() {
           <button
             type="button"
             onClick={handleGoogleAuth}
-            className="w-full py-3 px-4 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 text-white hover:border-orange-brand/50 text-xs font-semibold flex items-center justify-center gap-2.5 shadow-sm transition-all cursor-pointer hover:scale-[1.01]"
+            disabled={loading}
+            className="w-full py-3 px-4 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 text-white hover:border-orange-brand/50 text-xs font-semibold flex items-center justify-center gap-2.5 shadow-sm transition-all cursor-pointer hover:scale-[1.01] disabled:opacity-50 disabled:cursor-not-allowed"
             title="Continue with Google"
           >
             <GoogleLogo className="h-4 w-4 shrink-0" />
-            <span>Continue with Google</span>
+            <span>{loading ? "Connecting to Google..." : "Continue with Google"}</span>
           </button>
         </div>
 

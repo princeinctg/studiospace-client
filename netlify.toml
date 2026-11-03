@@ -3,10 +3,12 @@
 
 [build.environment]
   NEXT_PUBLIC_API_URL = "https://studiospace-server-f9ek.onrender.com/api"
-  NEXT_PUBLIC_FIREBASE_PROJECT_ID = "studiospace-client-513508"
-  NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN = "studiospace-client-513508.firebaseapp.com"
-  NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET = "studiospace-client-513508.appspot.com"
-  NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID = "199695232756"
+  NEXT_PUBLIC_FIREBASE_API_KEY = "AIzaSyBUFVTBcbl01Qis2sYyoLuoz0b-PFFa1dw"
+  NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN = "studiospace-9a467.firebaseapp.com"
+  NEXT_PUBLIC_FIREBASE_PROJECT_ID = "studiospace-9a467"
+  NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET = "studiospace-9a467.firebasestorage.app"
+  NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID = "601559527268"
+  NEXT_PUBLIC_FIREBASE_APP_ID = "1:601559527268:web:940c894cbb0b61b245d471"
   NEXT_PUBLIC_ENABLE_GOOGLE_AUTH = "true"
   NEXT_PUBLIC_GOOGLE_CLIENT_ID = "199695232756-9b1its7cgdvpc03e1uo875fcc1ccvu8d.apps.googleusercontent.com"
 

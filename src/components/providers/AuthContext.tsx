@@ -250,6 +250,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
    * Redirects user to backend `/auth/google` which forwards to Google Accounts.
    * Preserves destination redirect, user role, and originating auth page.
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const initiateTraditionalOAuth = (
     role?: UserRole,
     redirect?: string,
@@ -315,54 +316,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   /**
-   * Unified Google Authentication:
-   * 1. Primary: Firebase Google Authentication popup.
-   * 2. Automatic Fallback: If Firebase fails due to a genuine provider, credential,
-   *    or configuration error, automatically attempts Traditional Google OAuth.
-   * 3. Respects user cancellation (popup closed) without triggering unexpected redirect.
+   * Firebase Google Authentication:
+   * 1. Uses Firebase Web SDK modular API (signInWithPopup + GoogleAuthProvider).
+   * 2. Exclusively invokes Firebase; never falls back to legacy OAuth redirect.
+   * 3. Gracefully handles user popup closure.
+   * 4. Propagates actual Firebase errors to the UI.
    */
   const initiateGoogleLogin = async (
     role?: UserRole,
     redirect?: string,
-    from: "login" | "register" = "login"
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _from: "login" | "register" = "login"
   ): Promise<void> => {
     const targetRole = role || "guest";
     const targetRedirect = redirect || "/dashboard";
 
-    if (isFirebaseConfigured()) {
-      try {
-        console.log("[Auth] Attempting primary authentication: Firebase Google Sign-In...");
-        await loginWithFirebaseGoogle(targetRole);
-        if (typeof window !== "undefined") {
-          const cleanTarget = targetRedirect.startsWith("/") ? targetRedirect : `/${targetRedirect}`;
-          window.location.href = cleanTarget;
-        }
-        return;
-      } catch (err: unknown) {
-        const fbErr = err as { code?: string; message?: string };
-        // User deliberately closed popup window -> respect choice, do not redirect
-        if (
-          fbErr?.code === "auth/popup-closed-by-user" ||
-          fbErr?.code === "auth/cancelled-popup-request" ||
-          fbErr?.message?.includes("closed-by-user")
-        ) {
-          console.log("[Auth] User closed Google popup window.");
-          return;
-        }
-
-        // Genuine provider or configuration error -> automatically attempt Traditional Google OAuth fallback
-        console.warn(
-          "[Auth] Firebase Google Auth error, automatically falling back to Traditional Google OAuth:",
-          fbErr?.code || fbErr?.message || err
-        );
-        initiateTraditionalOAuth(targetRole, targetRedirect, from);
-        return;
-      }
+    if (!isFirebaseConfigured()) {
+      throw new Error(
+        "Firebase Google Authentication is not configured. Please supply NEXT_PUBLIC_FIREBASE_API_KEY in your environment."
+      );
     }
 
-    // Firebase not yet configured in environment -> automatically attempt Traditional Google OAuth fallback
-    console.log("[Auth] Firebase not configured in environment, attempting Traditional Google OAuth fallback...");
-    initiateTraditionalOAuth(targetRole, targetRedirect, from);
+    try {
+      console.log("[Auth] Initiating Firebase Google Sign-In with popup...");
+      await loginWithFirebaseGoogle(targetRole);
+      if (typeof window !== "undefined") {
+        const cleanTarget = targetRedirect.startsWith("/") ? targetRedirect : `/${targetRedirect}`;
+        window.location.href = cleanTarget;
+      }
+    } catch (err: unknown) {
+      const fbErr = err as { code?: string; message?: string };
+      // User deliberately closed popup window -> return cleanly without triggering error banner
+      if (
+        fbErr?.code === "auth/popup-closed-by-user" ||
+        fbErr?.code === "auth/cancelled-popup-request" ||
+        fbErr?.message?.includes("closed-by-user")
+      ) {
+        console.log("[Auth] User closed Google popup window.");
+        return;
+      }
+
+      console.error("[Auth] Firebase Google Authentication error:", fbErr?.code || fbErr?.message || err);
+      // Propagate the genuine Firebase error directly to the caller/UI without legacy redirect
+      throw new Error(
+        fbErr?.message || "Google authentication could not be completed. Please try again."
+      );
+    }
   };
 
   /**
