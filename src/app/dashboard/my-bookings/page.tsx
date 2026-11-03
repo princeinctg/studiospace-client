@@ -266,45 +266,51 @@ export default function MyBookingsPage() {
                           {formatCurrency(booking.totalPrice)}
                         </div>
                         <div className="text-[11px] text-muted-foreground">
-                          {isCancelled ? (
-                            <span className="text-muted-foreground/80 flex items-center gap-1 md:justify-end font-medium">
-                              {booking.paymentStatus === "paid" ? (
-                                "Paid (Session Cancelled)"
-                              ) : booking.paymentStatus === "refunded" ? (
-                                "Refund Processed"
+                          {(() => {
+                            const pStatus = (booking.paymentStatus || "UNPAID").toUpperCase();
+                            if (isCancelled) {
+                              return (
+                                <span className="text-muted-foreground/80 flex items-center gap-1 md:justify-end font-medium">
+                                  {pStatus === "PAID"
+                                    ? "PAID (Session Cancelled)"
+                                    : pStatus === "REFUNDED"
+                                    ? "Refund Processed"
+                                    : "Payment VOIDED"}
+                                </span>
+                              );
+                            }
+                            if (isConfirmed) {
+                              return pStatus === "PAID" ? (
+                                <span className="text-emerald-400 flex items-center gap-0.5 md:justify-end font-semibold">
+                                  <CheckCircle2 className="h-3 w-3" /> PAID & Secured
+                                </span>
+                              ) : pStatus === "REFUNDED" ? (
+                                <span className="text-muted-foreground flex items-center gap-0.5 md:justify-end">
+                                  Refund Processed
+                                </span>
                               ) : (
-                                "Payment Voided"
-                              )}
-                            </span>
-                          ) : isConfirmed ? (
-                            booking.paymentStatus === "paid" ? (
-                              <span className="text-emerald-400 flex items-center gap-0.5 md:justify-end">
-                                <CheckCircle2 className="h-3 w-3" /> Paid & Secured
+                                <span className="text-gold flex items-center gap-0.5 md:justify-end font-semibold">
+                                  Payment UNPAID
+                                </span>
+                              );
+                            }
+                            if (isCompleted) {
+                              return pStatus === "PAID" ? (
+                                <span className="text-emerald-400 flex items-center gap-0.5 md:justify-end font-semibold">
+                                  <CheckCircle2 className="h-3 w-3" /> PAID
+                                </span>
+                              ) : (
+                                <span className="text-muted-foreground flex items-center gap-0.5 md:justify-end uppercase font-semibold">
+                                  Payment {pStatus}
+                                </span>
+                              );
+                            }
+                            return (
+                              <span className="text-muted-foreground flex items-center gap-0.5 md:justify-end uppercase font-semibold">
+                                Payment {pStatus}
                               </span>
-                            ) : booking.paymentStatus === "refunded" ? (
-                              <span className="text-muted-foreground flex items-center gap-0.5 md:justify-end">
-                                Refund Processed
-                              </span>
-                            ) : (
-                              <span className="text-gold flex items-center gap-0.5 md:justify-end">
-                                Payment Pending
-                              </span>
-                            )
-                          ) : isCompleted ? (
-                            booking.paymentStatus === "paid" ? (
-                              <span className="text-emerald-400 flex items-center gap-0.5 md:justify-end">
-                                <CheckCircle2 className="h-3 w-3" /> Paid
-                              </span>
-                            ) : (
-                              <span className="text-muted-foreground flex items-center gap-0.5 md:justify-end capitalize">
-                                Payment {booking.paymentStatus}
-                              </span>
-                            )
-                          ) : (
-                            <span className="text-muted-foreground flex items-center gap-0.5 md:justify-end capitalize">
-                              Payment {booking.paymentStatus}
-                            </span>
-                          )}
+                            );
+                          })()}
                         </div>
                       </div>
 

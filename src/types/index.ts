@@ -65,7 +65,14 @@ export interface Studio {
 }
 
 export type BookingStatus = "pending" | "confirmed" | "cancelled" | "completed";
-export type PaymentStatus = "unpaid" | "paid" | "refunded";
+export type PaymentStatus =
+  | "UNPAID"
+  | "PAID"
+  | "VOIDED"
+  | "unpaid"
+  | "paid"
+  | "voided"
+  | "refunded";
 
 export interface Booking {
   _id: string;
