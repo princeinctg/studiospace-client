@@ -56,6 +56,9 @@ export function normalizeStudio(raw: unknown): Studio {
   if (Array.isArray(item.images) && item.images.length > 0) {
     images = item.images.filter((img): img is string => typeof img === "string" && img.trim().length > 0);
   }
+  if (images.length === 0 && typeof item.image === "string" && item.image.trim().length > 0) {
+    images = [item.image];
+  }
   if (images.length === 0 && typeof item.imageURL === "string") {
     if (item.imageURL.startsWith("http") && !item.imageURL.includes("youtube.com")) {
       images = [item.imageURL];
@@ -147,6 +150,9 @@ export function normalizeStudio(raw: unknown): Studio {
   } else if (lowerTitle.includes("velvet frequency") || (lowerTitle.includes("podcast") && !lowerTitle.includes("executive"))) {
     pricePerHour = 200;
     defaultBookingDuration = 8;
+  } else if (lowerTitle.includes("manhattan creative") || lowerTitle.includes("manhattan-creative")) {
+    pricePerHour = 400;
+    defaultBookingDuration = 8;
   } else if (lowerTitle.includes("grand cinematic") || lowerTitle.includes("photography atelier")) {
     pricePerHour = 450;
     defaultBookingDuration = 8;
@@ -209,10 +215,10 @@ export function normalizeStudio(raw: unknown): Studio {
     rating: typeof item.rating === "number" ? item.rating : 4.96,
     reviewCount: typeof item.reviewCount === "number" ? item.reviewCount : 24,
     capacity: Number(item.capacity ?? item.maxCapacity ?? 20),
-    squareFeet: Number(item.squareFeet ?? 1800),
+    squareFeet: Number(item.squareFeet ?? item.area ?? 1800),
     isAvailable: item.isAvailable !== false,
     featured: Boolean(item.featured ?? true),
-    defaultBookingDuration,
+    defaultBookingDuration: Number(item.defaultBookingDuration ?? item.defaultBookingHours ?? defaultBookingDuration),
     tags,
     rules,
     createdAt: String(item.createdAt || new Date().toISOString()),

@@ -142,22 +142,21 @@ const fallbackFeatured: Studio[] = [
     updatedAt: new Date().toISOString(),
   },
   {
-    _id: "demo-5",
-    title: "The Grand Cinematic Photography Atelier",
-    slug: "the-grand-cinematic-photography-atelier",
-    description: "Sun-drenched 3,200 sq.ft historic Chelsea atelier with 18-foot ceiling skylights, motorized overhead grid, styling vanity lounges, and Profoto Pro-11 packs.",
+    _id: "manhattan-creative-photography-studio",
+    title: "The Manhattan Creative Photography Studio",
+    slug: "manhattan-creative-photography-studio",
+    description: "A premium daylight photography studio featuring professional lighting, versatile backdrops and a spacious creative shooting environment.",
     category: "photography",
-    amenities: ["Skylight Daylight", "Motor Rigging Grid", "VIP Styling Suite", "Digital Capture Station"],
-    pricePerHour: 450,
+    amenities: ["Professional Lighting", "Versatile Backdrops", "Spacious Shooting Environment", "Natural Daylight", "VIP Styling Suite"],
+    pricePerHour: 400,
     defaultBookingDuration: 8,
     location: {
-      address: "540 W 28th St",
+      address: "Manhattan",
       city: "Manhattan",
       country: "United States",
     },
     images: [
-      "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1497366754035-f200968a6e72",
     ],
     host: {
       _id: "host-1",
@@ -165,12 +164,12 @@ const fallbackFeatured: Studio[] = [
       email: "host@studiospace.com",
     },
     rating: 5.0,
-    reviewCount: 42,
-    capacity: 30,
-    squareFeet: 3200,
+    reviewCount: 28,
+    capacity: 20,
+    squareFeet: 2000,
     isAvailable: true,
     featured: true,
-    tags: ["Photography", "Fashion", "Editorial"],
+    tags: ["Photography", "Daylight", "Manhattan", "Creative"],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -304,20 +303,33 @@ export function FeaturedStudios() {
         try {
           const local = JSON.parse(localStorage.getItem("studiospace_demo_studios") || "[]");
           if (Array.isArray(local) && local.length > 0) {
-            const localStudios = local.map(normalizeStudio);
+            const cleaned = local.filter(
+              (s: Record<string, unknown>) =>
+                s?.title !== "uutr" &&
+                s?.slug !== "uutr-pp7b" &&
+                s?._id !== "6ae983c20981efdd6935dded"
+            );
+            localStorage.setItem("studiospace_demo_studios", JSON.stringify(cleaned));
+            const localStudios = cleaned.map(normalizeStudio);
             const existingKeys = new Set([
               ...list.map((s) => s._id),
               ...list.map((s) => s.id),
               ...list.map((s) => s.slug),
             ]);
             const toAdd = localStudios.filter(
-              (s) => !existingKeys.has(s._id) && !existingKeys.has(s.id) && !existingKeys.has(s.slug)
+              (s: Studio) =>
+                !existingKeys.has(s._id) && !existingKeys.has(s.id) && !existingKeys.has(s.slug)
             );
             list = [...toAdd, ...list];
           }
         } catch {
           // Ignore localStorage error
         }
+
+        // Clean out any legacy uutr entry that might be cached in response
+        list = list.filter(
+          (s) => s.title !== "uutr" && s.slug !== "uutr-pp7b"
+        );
 
         // Guarantee all 8 original default studio cards always remain available
         const existingSlugsAndIds = new Set([

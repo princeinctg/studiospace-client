@@ -112,27 +112,26 @@ const fallbackExploreStudios: Studio[] = [
     updatedAt: new Date().toISOString(),
   },
   {
-    _id: "exp-new-1",
-    title: "The Grand Cinematic Photography Atelier",
-    slug: "the-grand-cinematic-photography-atelier",
-    description: "Sun-drenched 3,200 sq.ft historic Chelsea atelier with 18-foot ceiling skylights, motorized overhead grid, styling vanity lounges, and Profoto Pro-11 packs.",
+    _id: "manhattan-creative-photography-studio",
+    title: "The Manhattan Creative Photography Studio",
+    slug: "manhattan-creative-photography-studio",
+    description: "A premium daylight photography studio featuring professional lighting, versatile backdrops and a spacious creative shooting environment.",
     category: "photography",
-    amenities: ["Skylight Daylight", "Motor Rigging Grid", "VIP Styling Suite", "Digital Capture Station"],
-    pricePerHour: 450,
+    amenities: ["Professional Lighting", "Versatile Backdrops", "Spacious Shooting Environment", "Natural Daylight", "VIP Styling Suite"],
+    pricePerHour: 400,
     defaultBookingDuration: 8,
-    location: { address: "540 W 28th St", city: "Manhattan", country: "United States" },
+    location: { address: "Manhattan", city: "Manhattan", country: "United States" },
     images: [
-      "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1497366754035-f200968a6e72",
     ],
     host: { _id: "h1", name: "Imdatul Hoque", email: "host@studiospace.com" },
     rating: 5.0,
-    reviewCount: 42,
-    capacity: 30,
-    squareFeet: 3200,
+    reviewCount: 28,
+    capacity: 20,
+    squareFeet: 2000,
     isAvailable: true,
     featured: true,
-    tags: ["Photography", "Fashion", "Editorial"],
+    tags: ["Photography", "Daylight", "Manhattan", "Creative"],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -316,6 +315,9 @@ function ExploreContent() {
         } catch {
           // Ignore localStorage error
         }
+
+        // Filter out any legacy uutr entry
+        list = list.filter((s) => s.title !== "uutr" && s.slug !== "uutr-pp7b");
 
         // Guarantee all default studios are available when browsing directory
         if (!searchKeyword.trim() && filters.category === "all" && !filters.city) {
