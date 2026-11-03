@@ -21,6 +21,7 @@ import { formatCurrency } from "@/lib/utils";
 import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/components/providers/AuthContext";
 import { useToast } from "@/components/providers/ToastProvider";
+import { GoogleLogo } from "@/components/ui/GoogleLogo";
 
 interface BookingModalProps {
   studio: Studio;
@@ -49,7 +50,7 @@ function calculateDuration(start: string, end: string): number {
 }
 
 export function BookingModal({ studio, isOpen, onClose }: BookingModalProps) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, initiateGoogleLogin, loginDemo } = useAuth();
   const { toast } = useToast();
 
   const defaultDuration = studio.defaultBookingDuration || 8;
@@ -122,6 +123,16 @@ export function BookingModal({ studio, isOpen, onClose }: BookingModalProps) {
   const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setConflictError("");
+
+    if (!isAuthenticated) {
+      toast(
+        "info",
+        "Sign In Required",
+        "Please continue with Google or quick sign-in below to confirm your booking."
+      );
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -288,11 +299,49 @@ export function BookingModal({ studio, isOpen, onClose }: BookingModalProps) {
                 </div>
               </div>
 
-              {/* Guest / Auth Banner */}
+              {/* Authentication banner if unauthenticated */}
               {!isAuthenticated && (
-                <div className="p-2.5 rounded-xl bg-orange-brand/10 border border-orange-brand/30 text-orange-brand text-xs flex items-center justify-between">
-                  <span>Booking as Guest.</span>
-                  <Link href="/login" className="font-semibold underline">Sign in for rewards</Link>
+                <div className="p-4 rounded-2xl bg-orange-brand/10 border border-orange-brand/30 space-y-2.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-semibold text-orange-brand">Sign In Required to Complete Reservation</span>
+                    <Link
+                      href={`/login?redirect=/studio/${studio._id || studio.id}`}
+                      className="text-neutral-400 hover:text-white underline text-[11px]"
+                    >
+                      Email & Password
+                    </Link>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 pt-0.5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const target = `/studio/${studio._id || studio.id}`;
+                        initiateGoogleLogin("guest", target, "login");
+                      }}
+                      className="py-2.5 px-3 rounded-xl border border-white/20 bg-white/5 hover:bg-white/10 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all hover:scale-[1.01]"
+                    >
+                      <GoogleLogo className="h-3.5 w-3.5 shrink-0" />
+                      <span>Google Sign In</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        setLoading(true);
+                        try {
+                          await loginDemo("guest");
+                          toast("success", "Signed In", "Welcome! You can now request your booking.");
+                        } catch {
+                          toast("error", "Sign In Error", "Could not complete quick sign-in. Please use Google or login page.");
+                        } finally {
+                          setLoading(false);
+                        }
+                      }}
+                      className="py-2.5 px-3 rounded-xl border border-orange-brand/40 bg-orange-brand/20 hover:bg-orange-brand/30 text-orange-brand text-xs font-bold flex items-center justify-center gap-1.5 transition-all hover:scale-[1.01]"
+                    >
+                      <Sparkles className="h-3.5 w-3.5" />
+                      <span>Quick Guest Access</span>
+                    </button>
+                  </div>
                 </div>
               )}
 
@@ -481,13 +530,27 @@ export function BookingModal({ studio, isOpen, onClose }: BookingModalProps) {
               </div>
 
               {/* Submit CTA */}
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-3.5 px-6 rounded-2xl bg-orange-brand hover:bg-orange-hover text-white font-bold text-sm shadow-glow transition-all hover:scale-[1.02] disabled:opacity-50"
-              >
-                {loading ? "Verifying Availability..." : `Request Booking • ${formatCurrency(totalPrice)} (Pending)`}
-              </button>
+              {!isAuthenticated ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const target = `/studio/${studio._id || studio.id}`;
+                    initiateGoogleLogin("guest", target, "login");
+                  }}
+                  className="w-full py-3.5 px-6 rounded-2xl bg-orange-brand hover:bg-orange-hover text-white font-bold text-sm shadow-glow transition-all hover:scale-[1.02] flex items-center justify-center gap-2"
+                >
+                  <GoogleLogo className="h-4 w-4 shrink-0" />
+                  <span>Sign In with Google to Book • {formatCurrency(totalPrice)}</span>
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-3.5 px-6 rounded-2xl bg-orange-brand hover:bg-orange-hover text-white font-bold text-sm shadow-glow transition-all hover:scale-[1.02] disabled:opacity-50"
+                >
+                  {loading ? "Verifying Availability..." : `Request Booking • ${formatCurrency(totalPrice)} (Pending)`}
+                </button>
+              )}
 
               <div className="text-center flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
                 <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />

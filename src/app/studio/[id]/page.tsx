@@ -516,7 +516,37 @@ export default function StudioDetailPage() {
         // Ignore localStorage error
       }
 
-      setStudio(fallbackStudiosMap[idOrSlug] || fallbackStudiosMap["the-industrial-daylight-loft"]);
+      const DEMO_TO_OBJECT_ID: Record<string, string> = {
+        "demo-1": "6ae996e6749893a06af61de3",
+        "demo-2": "6ae99720749893a06af61dfa",
+        "demo-3": "6ae99721749893a06af61dfc",
+        "demo-4": "6ae99721749893a06af61dfe",
+        "demo-5": "6ae983c20981efdd6935dded",
+        "manhattan-creative-photography-studio": "6ae983c20981efdd6935dded",
+        "demo-6": "6ae99721749893a06af61e00",
+        "demo-7": "6ae99722749893a06af61e02",
+        "demo-8": "6ae99722749893a06af61e04",
+        "the-industrial-daylight-loft": "6ae996e6749893a06af61de3",
+        "aura-sound-dolby-atmos-suite": "6ae99720749893a06af61dfa",
+        "apex-virtual-film-led-soundstage": "6ae99721749893a06af61dfc",
+        "velvet-frequency-podcast-studio": "6ae99721749893a06af61dfe",
+        "obsidian-mastering-recording-house": "6ae99721749893a06af61e00",
+        "infinity-virtual-production-arena": "6ae99722749893a06af61e02",
+        "the-executive-podcast-broadcast-lounge": "6ae99722749893a06af61e04",
+      };
+
+      const fallback =
+        fallbackStudiosMap[idOrSlug] ||
+        fallbackStudiosMap[DEMO_TO_OBJECT_ID[idOrSlug]] ||
+        fallbackStudiosMap["the-industrial-daylight-loft"];
+
+      if (fallback) {
+        const resolvedObjectId =
+          DEMO_TO_OBJECT_ID[idOrSlug] ||
+          DEMO_TO_OBJECT_ID[fallback._id] ||
+          fallback._id;
+        setStudio(normalizeStudio({ ...fallback, _id: resolvedObjectId, id: resolvedObjectId }));
+      }
       setLoading(false);
     }
 

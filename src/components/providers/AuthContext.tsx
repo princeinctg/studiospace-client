@@ -31,7 +31,7 @@ interface AuthContextType {
   register: (name: string, email: string, password: string, role?: UserRole, avatar?: string) => Promise<void>;
   loginDemo: (role: "host" | "guest") => Promise<void>;
   googleLogin: (credential?: string) => Promise<void>;
-  initiateGoogleLogin: () => void;
+  initiateGoogleLogin: (role?: UserRole, redirect?: string, from?: "login" | "register") => void;
   isGoogleAuthEnabled: boolean;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
@@ -241,15 +241,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   /**
    * Initiates Google OAuth 2.0 Authorization Code flow.
    * Redirects user to backend `/auth/google` which forwards to Google Accounts.
-   * Can be re-enabled at any time via GOOGLE_OAUTH_CONFIG or NEXT_PUBLIC_ENABLE_GOOGLE_AUTH=true.
+   * Preserves destination redirect, user role, and originating auth page.
    */
-  const initiateGoogleLogin = () => {
+  const initiateGoogleLogin = (
+    role?: UserRole,
+    redirect?: string,
+    from: "login" | "register" = "login"
+  ) => {
     if (!GOOGLE_OAUTH_CONFIG.ENABLED) {
       console.warn("[Auth] Google Sign-In is temporarily disabled in configuration.");
       return;
     }
     const returnTo = typeof window !== "undefined" ? window.location.origin : "";
-    const redirectUrl = `${GOOGLE_OAUTH_CONFIG.AUTH_ENDPOINT}${returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : ""}`;
+    const statePayload = JSON.stringify({
+      returnTo,
+      role: role || "guest",
+      redirect: redirect || "/dashboard",
+      from,
+    });
+    const redirectUrl = `${GOOGLE_OAUTH_CONFIG.AUTH_ENDPOINT}?state=${encodeURIComponent(
+      statePayload
+    )}&returnTo=${encodeURIComponent(returnTo)}&role=${encodeURIComponent(role || "guest")}`;
     window.location.href = redirectUrl;
   };
 

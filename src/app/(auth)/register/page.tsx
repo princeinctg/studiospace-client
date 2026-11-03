@@ -70,7 +70,11 @@ export default function RegisterPage() {
       );
       return;
     }
-    initiateGoogleLogin();
+    const redirectTarget =
+      typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search).get("redirect") || "/dashboard"
+        : "/dashboard";
+    initiateGoogleLogin(role, redirectTarget, "register");
   };
 
   return (

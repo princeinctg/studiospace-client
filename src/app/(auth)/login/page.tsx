@@ -84,7 +84,11 @@ export default function LoginPage() {
       );
       return;
     }
-    initiateGoogleLogin();
+    const redirectTarget =
+      typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search).get("redirect") || "/dashboard"
+        : "/dashboard";
+    initiateGoogleLogin("guest", redirectTarget, "login");
   };
 
   return (
