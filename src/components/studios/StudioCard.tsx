@@ -23,7 +23,7 @@ export function StudioCard({ studio, priority = false }: StudioCardProps) {
     : ["https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=800&q=80"];
 
   const studioId = studio._id || studio.id || studio.slug;
-  const bookmarked = isBookmarked(studioId);
+  const bookmarked = isBookmarked(studioId, studio.slug);
 
   return (
     <motion.div

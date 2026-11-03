@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { useAuth } from "@/components/providers/AuthContext";
+import { useBookmarks } from "@/components/providers/BookmarkContext";
 import { formatCurrency } from "@/lib/utils";
 import {
   TrendingUp,
@@ -26,6 +27,7 @@ import {
 export default function DashboardOverviewPage() {
   const router = useRouter();
   const { user, isAuthenticated, loading, isHost } = useAuth();
+  const { bookmarks } = useBookmarks();
   const [activeTab, setActiveTab] = useState<"overview" | "stats">("overview");
 
   useEffect(() => {
@@ -317,11 +319,14 @@ export default function DashboardOverviewPage() {
                       <Heart className="h-5 w-5 fill-orange-brand/20" />
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-foreground group-hover:text-orange-brand transition-colors">
-                        My Studio Wishlist
+                      <div className="text-xs font-bold text-foreground group-hover:text-orange-brand transition-colors flex items-center gap-2">
+                        <span>My Studio Wishlist</span>
+                        <span className="px-1.5 py-0.5 rounded-full bg-orange-brand/20 text-orange-brand text-[10px] font-bold">
+                          {bookmarks.length}
+                        </span>
                       </div>
                       <div className="text-[11px] text-muted-foreground">
-                        Saved creative spaces
+                        {bookmarks.length === 1 ? "1 studio saved" : `${bookmarks.length} studios saved`}
                       </div>
                     </div>
                   </div>

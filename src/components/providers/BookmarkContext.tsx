@@ -8,7 +8,7 @@ import { apiRequest } from "@/lib/api";
 
 interface BookmarkContextType {
   bookmarks: string[];
-  isBookmarked: (idOrSlug: string) => boolean;
+  isBookmarked: (idOrSlug: string, altIdOrSlug?: string) => boolean;
   toggleBookmark: (studioOrId: Studio | string) => Promise<boolean>;
   fetchWishlistStudios: () => Promise<Studio[]>;
   loading: boolean;
@@ -62,9 +62,12 @@ export function BookmarkProvider({ children }: { children: React.ReactNode }) {
   }, [user?.id, user?.email, isAuthenticated, storageKey]);
 
   const isBookmarked = useCallback(
-    (idOrSlug: string): boolean => {
-      if (!idOrSlug) return false;
-      return bookmarks.includes(idOrSlug);
+    (idOrSlug: string, altIdOrSlug?: string): boolean => {
+      if (!idOrSlug && !altIdOrSlug) return false;
+      return (
+        (idOrSlug ? bookmarks.includes(idOrSlug) : false) ||
+        (altIdOrSlug ? bookmarks.includes(altIdOrSlug) : false)
+      );
     },
     [bookmarks]
   );
@@ -81,13 +84,17 @@ export function BookmarkProvider({ children }: { children: React.ReactNode }) {
           ? studioOrId
           : studioOrId._id || studioOrId.id || studioOrId.slug;
 
+      const altId = typeof studioOrId === "object" ? studioOrId.slug : undefined;
+
       const studioTitle =
         typeof studioOrId === "string" ? "Studio" : studioOrId.title || "Studio";
 
-      const currentlyBookmarked = bookmarks.includes(studioId);
+      const currentlyBookmarked =
+        bookmarks.includes(studioId) || (altId ? bookmarks.includes(altId) : false);
+
       const nextBookmarks = currentlyBookmarked
-        ? bookmarks.filter((id) => id !== studioId)
-        : [...bookmarks, studioId];
+        ? bookmarks.filter((id) => id !== studioId && id !== altId)
+        : [...bookmarks.filter((id) => id !== studioId && id !== altId), studioId];
 
       // Optimistic update & user-specific localStorage persistence
       setBookmarks(nextBookmarks);

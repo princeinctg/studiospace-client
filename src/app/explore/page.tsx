@@ -12,7 +12,7 @@ import { Search, Sparkles, AlertCircle } from "lucide-react";
 
 const fallbackExploreStudios: Studio[] = [
   {
-    _id: "exp-1",
+    _id: "6ae996e6749893a06af61de3",
     title: "The Industrial Daylight Loft",
     slug: "the-industrial-daylight-loft",
     description: "Expansive 2,400 sq.ft loft flooded with north-facing natural daylight through 14-foot factory arched windows. Features original exposed brick walls and an infinity cyclorama wall.",
@@ -37,7 +37,7 @@ const fallbackExploreStudios: Studio[] = [
     updatedAt: new Date().toISOString(),
   },
   {
-    _id: "exp-2",
+    _id: "6ae99720749893a06af61dfa",
     title: "Aura Sound & Dolby Atmos Suite",
     slug: "aura-sound-dolby-atmos-suite",
     description: "State-of-the-art acoustically isolated recording facility with SSL console and Genelec 7.1.4 Dolby Atmos monitoring.",
@@ -62,7 +62,7 @@ const fallbackExploreStudios: Studio[] = [
     updatedAt: new Date().toISOString(),
   },
   {
-    _id: "exp-3",
+    _id: "6ae99721749893a06af61dfc",
     title: "Apex Virtual Film & LED Soundstage",
     slug: "apex-virtual-film-led-soundstage",
     description: "Next-gen 5,000 sq.ft cinematic production soundstage with 180-degree curved LED volume wall.",
@@ -87,7 +87,7 @@ const fallbackExploreStudios: Studio[] = [
     updatedAt: new Date().toISOString(),
   },
   {
-    _id: "exp-4",
+    _id: "6ae99721749893a06af61dfe",
     title: "Velvet Frequency Broadcast Podcast Studio",
     slug: "velvet-frequency-podcast-studio",
     description: "Boutique 4-camera 4K podcast lounge designed for visual dialogue. Shure SM7B dynamic mics.",
@@ -112,7 +112,7 @@ const fallbackExploreStudios: Studio[] = [
     updatedAt: new Date().toISOString(),
   },
   {
-    _id: "manhattan-creative-photography-studio",
+    _id: "6ae983c20981efdd6935dded",
     title: "The Manhattan Creative Photography Studio",
     slug: "manhattan-creative-photography-studio",
     description: "A premium daylight photography studio featuring professional lighting, versatile backdrops and a spacious creative shooting environment.",
@@ -136,7 +136,7 @@ const fallbackExploreStudios: Studio[] = [
     updatedAt: new Date().toISOString(),
   },
   {
-    _id: "exp-new-2",
+    _id: "6ae99721749893a06af61e00",
     title: "Obsidian Mastering & Recording House",
     slug: "obsidian-mastering-recording-house",
     description: "Northward-designed custom-floated mastering and tracking suite equipped with ATC SCM110ASL monitoring and Shadow Hills mastering compressor.",
@@ -161,7 +161,7 @@ const fallbackExploreStudios: Studio[] = [
     updatedAt: new Date().toISOString(),
   },
   {
-    _id: "exp-new-3",
+    _id: "6ae99722749893a06af61e02",
     title: "Infinity Virtual Production Arena",
     slug: "infinity-virtual-production-arena",
     description: "Monumental 6,500 sq.ft stage with 270-degree LED volume wall driven by Unreal Engine 5 nDisplay and drive-in semi loading access.",
@@ -186,7 +186,7 @@ const fallbackExploreStudios: Studio[] = [
     updatedAt: new Date().toISOString(),
   },
   {
-    _id: "exp-new-4",
+    _id: "6ae99722749893a06af61e04",
     title: "The Executive Podcast & Broadcast Lounge",
     slug: "the-executive-podcast-broadcast-lounge",
     description: "Panoramic skyline-view broadcast lounge featuring 5x Sony FX6 cinema cameras, sound-damped walnut slat architecture, and 10Gbps fiber uplink.",
@@ -326,8 +326,12 @@ function ExploreContent() {
             ...list.map((s) => s._id),
             ...list.map((s) => s.id),
           ]);
+          const existingTitles = new Set(list.map((s) => s.title?.toLowerCase().trim()));
           const missingDefaults = fallbackExploreStudios.filter(
-            (f) => !existingSlugsAndIds.has(f.slug) && !existingSlugsAndIds.has(f._id)
+            (f) =>
+              !existingSlugsAndIds.has(f.slug) &&
+              !existingSlugsAndIds.has(f._id) &&
+              !existingTitles.has(f.title?.toLowerCase().trim())
           );
           list = [...list, ...missingDefaults];
         }
