@@ -10,6 +10,7 @@ interface BookmarkContextType {
   bookmarks: string[];
   isBookmarked: (idOrSlug: string) => boolean;
   toggleBookmark: (studioOrId: Studio | string) => Promise<boolean>;
+  fetchWishlistStudios: () => Promise<Studio[]>;
   loading: boolean;
 }
 
@@ -70,6 +71,11 @@ export function BookmarkProvider({ children }: { children: React.ReactNode }) {
 
   const toggleBookmark = useCallback(
     async (studioOrId: Studio | string): Promise<boolean> => {
+      if (!isAuthenticated) {
+        toast("info", "Sign in required", "Please sign in to save creative studios to your Wishlist.");
+        return false;
+      }
+
       const studioId =
         typeof studioOrId === "string"
           ? studioOrId
@@ -83,23 +89,30 @@ export function BookmarkProvider({ children }: { children: React.ReactNode }) {
         ? bookmarks.filter((id) => id !== studioId)
         : [...bookmarks, studioId];
 
-      // Optimistic update & localStorage persistence
+      // Optimistic update & user-specific localStorage persistence
       setBookmarks(nextBookmarks);
       try {
         localStorage.setItem(storageKey, JSON.stringify(nextBookmarks));
       } catch (err) {
-        console.warn("Error saving bookmark to localStorage:", err);
+        console.warn("Error saving wishlist to localStorage:", err);
       }
 
       // Show toast
       if (!currentlyBookmarked) {
-        toast("success", "Studio Bookmarked", `Saved "${studioTitle}" to your creator collection.`);
+        toast("success", "Added to Wishlist", `Saved "${studioTitle}" to your Wishlist.`);
       } else {
-        toast("info", "Bookmark Removed", `Removed "${studioTitle}" from saved studios.`);
+        toast("info", "Removed from Wishlist", `Removed "${studioTitle}" from your Wishlist.`);
       }
 
-      // Sync with server if authenticated
-      if (isAuthenticated) {
+      // Sync with server (MongoDB / backend)
+      try {
+        if (!currentlyBookmarked) {
+          await apiRequest(`/wishlist/${studioId}`, { method: "POST" });
+        } else {
+          await apiRequest(`/wishlist/${studioId}`, { method: "DELETE" });
+        }
+      } catch {
+        // Fallback to /bookmarks endpoint
         try {
           if (!currentlyBookmarked) {
             await apiRequest(`/bookmarks/${studioId}`, { method: "POST" });
@@ -116,8 +129,51 @@ export function BookmarkProvider({ children }: { children: React.ReactNode }) {
     [bookmarks, storageKey, isAuthenticated, toast]
   );
 
+  const fetchWishlistStudios = useCallback(async (): Promise<Studio[]> => {
+    if (!isAuthenticated) return [];
+
+    try {
+      // 1. Fetch from /wishlist or /bookmarks endpoint
+      let res: { bookmarks?: Studio[]; studioIds?: string[] } | null = null;
+      try {
+        res = await apiRequest<{ bookmarks?: Studio[]; studioIds?: string[] }>("/wishlist");
+      } catch {
+        res = await apiRequest<{ bookmarks?: Studio[]; studioIds?: string[] }>("/bookmarks");
+      }
+
+      if (res?.bookmarks && Array.isArray(res.bookmarks) && res.bookmarks.length > 0) {
+        return res.bookmarks;
+      }
+
+      // 2. If IDs only, resolve from /studios
+      const targetIds = res?.studioIds || bookmarks;
+      if (targetIds.length > 0) {
+        const studiosRes = await apiRequest<{ studios?: Studio[] }>("/studios?limit=50");
+        const allStudios = studiosRes?.studios || [];
+        const matched = allStudios.filter(
+          (s) =>
+            targetIds.includes(s._id) ||
+            targetIds.includes(s.id || "") ||
+            targetIds.includes(s.slug || "")
+        );
+        return matched;
+      }
+      return [];
+    } catch {
+      return [];
+    }
+  }, [isAuthenticated, bookmarks]);
+
   return (
-    <BookmarkContext.Provider value={{ bookmarks, isBookmarked, toggleBookmark, loading }}>
+    <BookmarkContext.Provider
+      value={{
+        bookmarks,
+        isBookmarked,
+        toggleBookmark,
+        fetchWishlistStudios,
+        loading,
+      }}
+    >
       {children}
     </BookmarkContext.Provider>
   );

@@ -68,14 +68,44 @@ export default function EditStudioPage() {
 
   const handleUpdate = async (data: StudioFormData) => {
     try {
-      await apiRequest(`/studios/${studio?._id || idOrSlug}`, {
+      const res = await apiRequest<{ studio?: Studio }>(`/studios/${studio?._id || idOrSlug}`, {
         method: "PUT",
         body: JSON.stringify(data),
       });
 
+      const updated = res?.studio || { ...studio, ...data };
+
+      // Update in localStorage in place without creating duplicate cards
+      try {
+        const local = JSON.parse(localStorage.getItem("studiospace_demo_studios") || "[]");
+        const idx = local.findIndex(
+          (s: { _id?: string; id?: string; slug?: string }) =>
+            s._id === studio?._id || s.id === studio?._id || s.slug === studio?.slug || s.slug === idOrSlug
+        );
+        if (idx !== -1) {
+          local[idx] = { ...local[idx], ...updated };
+          localStorage.setItem("studiospace_demo_studios", JSON.stringify(local));
+        }
+      } catch {
+        // Ignore localStorage error
+      }
+
       toast("success", "Listing Updated", "Studio information successfully synchronized.");
-      router.push(`/studio/${studio?.slug || studio?._id || idOrSlug}`);
+      router.push("/dashboard/my-listings");
     } catch {
+      try {
+        const local = JSON.parse(localStorage.getItem("studiospace_demo_studios") || "[]");
+        const idx = local.findIndex(
+          (s: { _id?: string; id?: string; slug?: string }) =>
+            s._id === studio?._id || s.id === studio?._id || s.slug === studio?.slug || s.slug === idOrSlug
+        );
+        if (idx !== -1) {
+          local[idx] = { ...local[idx], ...data };
+          localStorage.setItem("studiospace_demo_studios", JSON.stringify(local));
+        }
+      } catch {
+        // Ignore localStorage error
+      }
       toast("success", "Listing Updated", "Studio details saved successfully.");
       router.push("/dashboard/my-listings");
     }

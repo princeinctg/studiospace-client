@@ -284,34 +284,55 @@ export function FeaturedStudios() {
       try {
         let list: Studio[] = [];
         try {
-          const data = await apiRequest<Record<string, unknown> | unknown[]>("/studios/featured");
+          const data = await apiRequest<Record<string, unknown> | unknown[]>("/studios/featured?limit=50");
           const raw = Array.isArray(data) ? data : (data as { studios?: unknown[] })?.studios;
           if (Array.isArray(raw) && raw.length > 0) {
             list = raw.map(normalizeStudio);
           }
         } catch {
           // If /studios/featured fails on legacy backend, fetch from /studios
-          const data = await apiRequest<Record<string, unknown> | unknown[]>("/studios");
+          const data = await apiRequest<Record<string, unknown> | unknown[]>("/studios?limit=50");
           const raw = Array.isArray(data) ? data : (data as { studios?: unknown[] })?.studios;
           if (Array.isArray(raw) && raw.length > 0) {
             const normalized = raw.map(normalizeStudio);
             const featuredOnly = normalized.filter((s: Studio) => s.featured);
-            list = featuredOnly.length > 0 ? featuredOnly : normalized.slice(0, 8);
+            list = featuredOnly.length > 0 ? featuredOnly : normalized;
           }
         }
 
-        if (list.length > 0) {
-          if (list.length < 8) {
-            const existingSlugs = new Set(list.map((s) => s.slug || s.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')));
-            const missing = fallbackFeatured.filter((f) => !existingSlugs.has(f.slug));
-            list = [...list, ...missing].slice(0, 8);
+        // Merge any user-created studios saved in client storage
+        try {
+          const local = JSON.parse(localStorage.getItem("studiospace_demo_studios") || "[]");
+          if (Array.isArray(local) && local.length > 0) {
+            const localStudios = local.map(normalizeStudio);
+            const existingKeys = new Set([
+              ...list.map((s) => s._id),
+              ...list.map((s) => s.id),
+              ...list.map((s) => s.slug),
+            ]);
+            const toAdd = localStudios.filter(
+              (s) => !existingKeys.has(s._id) && !existingKeys.has(s.id) && !existingKeys.has(s.slug)
+            );
+            list = [...toAdd, ...list];
           }
-          setStudios(list);
-        } else {
-          setStudios(fallbackFeatured);
+        } catch {
+          // Ignore localStorage error
         }
+
+        // Guarantee all 8 original default studio cards always remain available
+        const existingSlugsAndIds = new Set([
+          ...list.map((s) => s.slug),
+          ...list.map((s) => s._id),
+          ...list.map((s) => s.id),
+        ]);
+        const missingDefaults = fallbackFeatured.filter(
+          (f) => !existingSlugsAndIds.has(f.slug) && !existingSlugsAndIds.has(f._id)
+        );
+        list = [...list, ...missingDefaults];
+
+        setStudios(list);
       } catch {
-        // Keeps fallback data
+        setStudios(fallbackFeatured);
       } finally {
         setLoading(false);
       }
@@ -356,7 +377,7 @@ export function FeaturedStudios() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {studios.slice(0, 8).map((studio, idx) => (
+            {studios.map((studio, idx) => (
               <motion.div
                 key={studio._id || studio.id || idx}
                 initial={{ opacity: 0, y: 30 }}

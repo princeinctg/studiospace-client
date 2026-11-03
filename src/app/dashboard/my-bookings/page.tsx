@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
+import { EditBookingModal } from "@/components/booking/EditBookingModal";
 import { Booking } from "@/types";
 import { apiRequest } from "@/lib/api";
 import { formatCurrency, formatDate } from "@/lib/utils";
@@ -20,6 +21,7 @@ import {
   XCircle,
   AlertCircle,
   Compass,
+  Edit2,
 } from "lucide-react";
 
 export default function MyBookingsPage() {
@@ -30,6 +32,7 @@ export default function MyBookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [cancellingBooking, setCancellingBooking] = useState<Booking | null>(null);
+  const [editingBooking, setEditingBooking] = useState<Booking | null>(null);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -306,13 +309,22 @@ export default function MyBookingsPage() {
                       </div>
 
                       {canCancel && (
-                        <button
-                          onClick={() => setCancellingBooking(booking)}
-                          className="px-3 py-1.5 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/10 text-xs font-semibold flex items-center gap-1 transition-colors"
-                        >
-                          <XCircle className="h-3.5 w-3.5" />
-                          <span>Cancel Booking</span>
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => setEditingBooking(booking)}
+                            className="px-3 py-1.5 rounded-xl border border-orange-brand/30 text-orange-brand hover:bg-orange-brand/10 text-xs font-semibold flex items-center gap-1 transition-colors"
+                          >
+                            <Edit2 className="h-3.5 w-3.5" />
+                            <span>Modify</span>
+                          </button>
+                          <button
+                            onClick={() => setCancellingBooking(booking)}
+                            className="px-3 py-1.5 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/10 text-xs font-semibold flex items-center gap-1 transition-colors"
+                          >
+                            <XCircle className="h-3.5 w-3.5" />
+                            <span>Cancel</span>
+                          </button>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -324,6 +336,20 @@ export default function MyBookingsPage() {
       </main>
 
       <Footer />
+
+      {/* Edit Booking Modal */}
+      {editingBooking && (
+        <EditBookingModal
+          isOpen={!!editingBooking}
+          booking={editingBooking}
+          onClose={() => setEditingBooking(null)}
+          onSuccess={(updatedBooking) => {
+            setBookings((prev) =>
+              prev.map((b) => (b._id === updatedBooking._id ? { ...b, ...updatedBooking } : b))
+            );
+          }}
+        />
+      )}
 
       {/* Cancel Confirmation Modal */}
       {cancellingBooking && (

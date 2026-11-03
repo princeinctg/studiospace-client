@@ -20,6 +20,7 @@ import {
   CheckCircle2,
   Clock,
   Sparkles,
+  Heart,
 } from "lucide-react";
 
 export default function DashboardOverviewPage() {
@@ -301,6 +302,26 @@ export default function DashboardOverviewPage() {
                       </div>
                       <div className="text-[11px] text-muted-foreground">
                         Edit rates & photos
+                      </div>
+                    </div>
+                  </div>
+                  <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-orange-brand transition-colors" />
+                </Link>
+
+                <Link
+                  href="/dashboard/wishlist"
+                  className="p-4 rounded-2xl border border-border bg-secondary/40 hover:bg-secondary hover:border-orange-brand/40 transition-all flex items-center justify-between block group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-orange-brand/10 text-orange-brand flex items-center justify-center">
+                      <Heart className="h-5 w-5 fill-orange-brand/20" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-foreground group-hover:text-orange-brand transition-colors">
+                        My Studio Wishlist
+                      </div>
+                      <div className="text-[11px] text-muted-foreground">
+                        Saved creative spaces
                       </div>
                     </div>
                   </div>

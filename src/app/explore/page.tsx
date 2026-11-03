@@ -317,6 +317,19 @@ function ExploreContent() {
           // Ignore localStorage error
         }
 
+        // Guarantee all default studios are available when browsing directory
+        if (!searchKeyword.trim() && filters.category === "all" && !filters.city) {
+          const existingSlugsAndIds = new Set([
+            ...list.map((s) => s.slug),
+            ...list.map((s) => s._id),
+            ...list.map((s) => s.id),
+          ]);
+          const missingDefaults = fallbackExploreStudios.filter(
+            (f) => !existingSlugsAndIds.has(f.slug) && !existingSlugsAndIds.has(f._id)
+          );
+          list = [...list, ...missingDefaults];
+        }
+
         setStudios(list);
       } catch {
         // Filter fallback dataset locally if backend server is not yet attached

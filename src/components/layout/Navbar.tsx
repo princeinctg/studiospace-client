@@ -15,6 +15,7 @@ import {
   LayoutDashboard,
   Calendar,
   Building,
+  Heart,
 } from "lucide-react";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { useAuth } from "@/components/providers/AuthContext";
@@ -66,7 +67,14 @@ export function Navbar() {
   const mobileNavLinks = [
     { label: "Home", href: "/" },
     { label: "Explore Studios", href: "/explore" },
-    ...(isAuthenticated ? [{ label: "Dashboard", href: "/dashboard" }] : []),
+    ...(isAuthenticated
+      ? [
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "My Studios", href: "/dashboard/my-listings" },
+          { label: "My Bookings", href: "/dashboard/my-bookings" },
+          { label: "Wishlist", href: "/dashboard/wishlist" },
+        ]
+      : []),
   ];
 
   return (
@@ -218,6 +226,14 @@ export function Navbar() {
                       >
                         <Calendar className="h-4 w-4 text-emerald-400" />
                         <span>My Bookings</span>
+                      </Link>
+
+                      <Link
+                        href="/dashboard/wishlist"
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium hover:bg-secondary/70 transition-colors"
+                      >
+                        <Heart className="h-4 w-4 text-orange-brand" />
+                        <span>Wishlist</span>
                       </Link>
 
                       <div className="border-t border-border/60 my-1 pt-1">
