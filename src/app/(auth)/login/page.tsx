@@ -21,6 +21,19 @@ export default function LoginPage() {
   const [errorMsg, setErrorMsg] = useState("");
 
   React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const urlError = params.get("error");
+      if (urlError) {
+        setErrorMsg(urlError);
+        toast("error", "Google Authentication Notice", urlError);
+        const cleanUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
+    }
+  }, [toast]);
+
+  React.useEffect(() => {
     if (!authLoading && isAuthenticated) {
       const redirectTarget =
         typeof window !== "undefined"
@@ -163,26 +176,12 @@ export default function LoginPage() {
 
           <button
             type="button"
-            disabled={!isGoogleAuthEnabled}
             onClick={handleGoogleAuth}
-            className={`w-full py-3 px-4 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2.5 shadow-sm transition-all ${
-              isGoogleAuthEnabled
-                ? "border-white/15 bg-white/5 hover:bg-white/10 text-white hover:border-orange-brand/50 cursor-pointer"
-                : "border-white/10 bg-white/5 text-neutral-400 cursor-not-allowed opacity-60"
-            }`}
-            title={
-              isGoogleAuthEnabled
-                ? "Sign in with Google"
-                : "Google Sign-In is temporarily disabled for maintenance"
-            }
+            className="w-full py-3 px-4 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 text-white hover:border-orange-brand/50 text-xs font-semibold flex items-center justify-center gap-2.5 shadow-sm transition-all cursor-pointer hover:scale-[1.01]"
+            title="Sign in with Google"
           >
-            <GoogleLogo className={`h-4 w-4 shrink-0 ${!isGoogleAuthEnabled ? "grayscale opacity-60" : ""}`} />
+            <GoogleLogo className="h-4 w-4 shrink-0" />
             <span>Continue with Google</span>
-            {!isGoogleAuthEnabled && (
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-neutral-400 font-normal">
-                Temporarily Disabled
-              </span>
-            )}
           </button>
 
           <div className="grid grid-cols-2 gap-2.5 pt-1">

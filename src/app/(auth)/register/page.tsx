@@ -23,6 +23,19 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const urlError = params.get("error");
+      if (urlError) {
+        setErrorMsg(urlError);
+        toast("error", "Google Authentication Notice", urlError);
+        const cleanUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
+    }
+  }, [toast]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg("");
@@ -190,26 +203,12 @@ export default function RegisterPage() {
 
           <button
             type="button"
-            disabled={!isGoogleAuthEnabled}
             onClick={handleGoogleAuth}
-            className={`w-full py-3 px-4 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2.5 shadow-sm transition-all ${
-              isGoogleAuthEnabled
-                ? "border-white/15 bg-white/5 hover:bg-white/10 text-white hover:border-orange-brand/50 cursor-pointer"
-                : "border-white/10 bg-white/5 text-neutral-400 cursor-not-allowed opacity-60"
-            }`}
-            title={
-              isGoogleAuthEnabled
-                ? "Sign up with Google"
-                : "Google Sign-Up is temporarily disabled for maintenance"
-            }
+            className="w-full py-3 px-4 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 text-white hover:border-orange-brand/50 text-xs font-semibold flex items-center justify-center gap-2.5 shadow-sm transition-all cursor-pointer hover:scale-[1.01]"
+            title="Sign up with Google"
           >
-            <GoogleLogo className={`h-4 w-4 shrink-0 ${!isGoogleAuthEnabled ? "grayscale opacity-60" : ""}`} />
+            <GoogleLogo className="h-4 w-4 shrink-0" />
             <span>Sign up with Google</span>
-            {!isGoogleAuthEnabled && (
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-neutral-400 font-normal">
-                Temporarily Disabled
-              </span>
-            )}
           </button>
         </div>
 
