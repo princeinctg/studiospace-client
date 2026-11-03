@@ -51,30 +51,30 @@ export function Navbar() {
     setUserDropdownOpen(false);
   }, [pathname]);
 
-  const navLinks = isAuthenticated
-    ? [
-        { label: "Home", href: "/" },
-        { label: "Explore Studios", href: "/explore" },
-        { label: "Dashboard", href: "/dashboard" },
-        { label: "My Studios", href: "/dashboard/my-listings" },
-        { label: "My Bookings", href: "/dashboard/my-bookings" },
-      ]
-    : [
-        { label: "Home", href: "/" },
-        { label: "Explore Studios", href: "/explore" },
-      ];
+  const navLinks = [
+    { label: "Home", href: "/" },
+    { label: "Explore Studios", href: "/explore" },
+    { label: "How It Works", href: "/#how-it-works" },
+    { label: "About Us", href: "/#about" },
+  ];
 
   const mobileNavLinks = [
     { label: "Home", href: "/" },
     { label: "Explore Studios", href: "/explore" },
+    { label: "How It Works", href: "/#how-it-works" },
+    { label: "About Us", href: "/#about" },
     ...(isAuthenticated
       ? [
           { label: "Dashboard", href: "/dashboard" },
-          { label: "My Studios", href: "/dashboard/my-listings" },
+          { label: "Add New Studio", href: "/studio/add" },
+          { label: "My Studio Listings", href: "/dashboard/my-listings" },
           { label: "My Bookings", href: "/dashboard/my-bookings" },
           { label: "Wishlist", href: "/dashboard/wishlist" },
         ]
-      : []),
+      : [
+          { label: "Sign In", href: "/login" },
+          { label: "Register", href: "/register" },
+        ]),
   ];
 
   return (
@@ -94,7 +94,11 @@ export function Navbar() {
           <nav className="hidden md:flex items-center gap-1.5 p-1 rounded-full bg-secondary/60 backdrop-blur-md border border-border/60">
             {navLinks.map((link) => {
               const isActive =
-                link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
+                link.href === "/"
+                  ? pathname === "/"
+                  : link.href.startsWith("/#")
+                  ? false
+                  : pathname.startsWith(link.href);
               return (
                 <Link
                   key={link.href}
@@ -213,11 +217,19 @@ export function Navbar() {
                       </Link>
 
                       <Link
+                        href="/studio/add"
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium hover:bg-secondary/70 transition-colors"
+                      >
+                        <Plus className="h-4 w-4 text-orange-brand" />
+                        <span>Add New Studio</span>
+                      </Link>
+
+                      <Link
                         href="/dashboard/my-listings"
                         className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium hover:bg-secondary/70 transition-colors"
                       >
                         <Building className="h-4 w-4 text-gold" />
-                        <span>My Studios</span>
+                        <span>My Studio Listings</span>
                       </Link>
 
                       <Link

@@ -178,7 +178,7 @@ export function HeroSlider() {
                     href="/studio/add"
                     className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-medium backdrop-blur-md border border-white/20 transition-all"
                   >
-                    <span>List Your Studio</span>
+                    <span>Host Your Space</span>
                   </Link>
                 </motion.div>
               </div>

@@ -290,14 +290,14 @@ export function FeaturedStudios() {
       try {
         let list: Studio[] = [];
         try {
-          const data = await apiRequest<Record<string, unknown> | unknown[]>("/studios/featured?limit=50");
+          const data = await apiRequest<Record<string, unknown> | unknown[]>("/studios/featured?limit=6");
           const raw = Array.isArray(data) ? data : (data as { studios?: unknown[] })?.studios;
           if (Array.isArray(raw) && raw.length > 0) {
             list = raw.map(normalizeStudio);
           }
         } catch {
           // If /studios/featured fails on legacy backend, fetch from /studios
-          const data = await apiRequest<Record<string, unknown> | unknown[]>("/studios?limit=50");
+          const data = await apiRequest<Record<string, unknown> | unknown[]>("/studios?limit=6");
           const raw = Array.isArray(data) ? data : (data as { studios?: unknown[] })?.studios;
           if (Array.isArray(raw) && raw.length > 0) {
             const normalized = raw.map(normalizeStudio);
@@ -391,16 +391,16 @@ export function FeaturedStudios() {
           </Link>
         </div>
 
-        {/* Studio Cards Grid with Staggered Entrance */}
+        {/* Studio Cards Grid with Staggered Entrance (Exactly 6 Featured Studios) */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map((n) => (
               <div key={n} className="h-80 rounded-2xl bg-card border border-border animate-pulse" />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {studios.map((studio, idx) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {studios.slice(0, 6).map((studio, idx) => (
               <motion.div
                 key={studio._id || studio.id || idx}
                 initial={{ opacity: 0, y: 30 }}
@@ -408,7 +408,7 @@ export function FeaturedStudios() {
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.5, delay: idx * 0.08 }}
               >
-                <StudioCard studio={studio} priority={idx < 4} />
+                <StudioCard studio={studio} priority={idx < 3} />
               </motion.div>
             ))}
           </div>

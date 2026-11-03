@@ -19,7 +19,7 @@ interface CategoryItem {
 const categories: CategoryItem[] = [
   {
     id: "photo",
-    name: "Daylight Photography",
+    name: "Photo Studios",
     slug: "photography",
     count: "140+ Spaces",
     description: "North-facing lofts, arched factory windows, and infinity cycloramas.",
@@ -27,31 +27,40 @@ const categories: CategoryItem[] = [
     image: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=800&q=80",
   },
   {
-    id: "record",
-    name: "Dolby Atmos Audio",
-    slug: "recording",
-    count: "85+ Suites",
-    description: "Acoustically isolated mixing rooms, vintage microphones & live rooms.",
-    icon: Music,
-    image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80",
-  },
-  {
     id: "film",
-    name: "Cinema & LED Volumes",
+    name: "Sound Stages",
     slug: "film",
     count: "60+ Stages",
-    description: "Unreal Engine LED walls, lighting grids, and soundproofed stages.",
+    description: "Unreal Engine LED walls, lighting grids, and soundproofed film stages.",
     icon: Film,
     image: "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: "podcast",
-    name: "4K Broadcast Podcast",
+    name: "Podcast Rooms",
     slug: "podcast",
     count: "95+ Studios",
     description: "Multi-camera broadcast lounges with Shure SM7B microphones.",
     icon: Radio,
     image: "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: "record",
+    name: "Music Suites",
+    slug: "recording",
+    count: "85+ Suites",
+    description: "Acoustically isolated mixing rooms, vintage microphones & live vocal rooms.",
+    icon: Music,
+    image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: "art",
+    name: "Art Workshops",
+    slug: "art",
+    count: "50+ Studios",
+    description: "Raw concrete workshops with skylights, slop sinks, and pottery wheels.",
+    icon: Palette,
+    image: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: "dance",
@@ -61,15 +70,6 @@ const categories: CategoryItem[] = [
     description: "Sprung Harlequin flooring, full wall mirrors, and sound systems.",
     icon: Activity,
     image: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: "art",
-    name: "Art & Sculpture",
-    slug: "art",
-    count: "50+ Studios",
-    description: "Raw concrete workshops with skylights, slop sinks, and pottery wheels.",
-    icon: Palette,
-    image: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=800&q=80",
   },
 ];
 
@@ -101,7 +101,7 @@ export function CategoryGrid() {
                 transition={{ duration: 0.4, delay: idx * 0.08 }}
               >
                 <Link
-                  href={`/explore?category=${cat.slug}`}
+                  href={`/studios?category=${cat.slug}`}
                   className="group relative h-72 rounded-2xl overflow-hidden border border-border flex flex-col justify-end p-6 bg-charcoal shadow-sm hover:shadow-cinematic hover:border-orange-brand/50 transition-all block"
                 >
                   {/* Background Photo */}

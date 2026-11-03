@@ -33,7 +33,7 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section className="py-24 bg-background relative overflow-hidden">
+    <section id="how-it-works" className="py-24 bg-background relative overflow-hidden">
       <div className="container mx-auto px-6">
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">

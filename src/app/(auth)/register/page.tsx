@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Mail, Lock, User, ArrowRight, ShieldCheck, Building, Sparkles } from "lucide-react";
+import { Mail, Lock, User, ArrowRight, ShieldCheck, Building, Sparkles, Image as ImageIcon } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthContext";
 import { useToast } from "@/components/providers/ToastProvider";
 import { BrandLogo } from "@/components/ui/BrandLogo";
@@ -18,6 +18,7 @@ export default function RegisterPage() {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [photoUrl, setPhotoUrl] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<UserRole>("guest");
   const [loading, setLoading] = useState(false);
@@ -46,10 +47,22 @@ export default function RegisterPage() {
       return;
     }
 
+    if (!/[A-Z]/.test(password)) {
+      setErrorMsg("Password must contain at least one uppercase letter.");
+      toast("error", "Validation Error", "Password must contain at least one uppercase letter.");
+      return;
+    }
+
+    if (!/[a-z]/.test(password)) {
+      setErrorMsg("Password must contain at least one lowercase letter.");
+      toast("error", "Validation Error", "Password must contain at least one lowercase letter.");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      await registerUser(name, email, password, role);
+      await registerUser(name, email, password, role, photoUrl.trim());
       toast("success", "Account Created!", `Welcome to StudioSpace as a ${role}.`);
       router.push("/dashboard");
     } catch (err: unknown) {
@@ -175,6 +188,23 @@ export default function RegisterPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="creator@domain.com"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-orange-brand"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-semibold text-neutral-300">Photo URL</label>
+              <span className="text-[10px] text-neutral-500">Optional</span>
+            </div>
+            <div className="relative">
+              <ImageIcon className="absolute left-3.5 top-3 h-4 w-4 text-neutral-500" />
+              <input
+                type="url"
+                value={photoUrl}
+                onChange={(e) => setPhotoUrl(e.target.value)}
+                placeholder="https://images.unsplash.com/... or leave blank"
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-orange-brand"
               />
             </div>
