@@ -317,6 +317,7 @@ export default function MyBookingsPage() {
                       {canCancel && (
                         <div className="flex items-center gap-2">
                           <button
+                            type="button"
                             onClick={() => setEditingBooking(booking)}
                             className="px-3 py-1.5 rounded-xl border border-orange-brand/30 text-orange-brand hover:bg-orange-brand/10 text-xs font-semibold flex items-center gap-1 transition-colors"
                           >
@@ -351,7 +352,12 @@ export default function MyBookingsPage() {
           onClose={() => setEditingBooking(null)}
           onSuccess={(updatedBooking) => {
             setBookings((prev) =>
-              prev.map((b) => (b._id === updatedBooking._id ? { ...b, ...updatedBooking } : b))
+              prev.map((b) => {
+                const bId = b._id || (b as { id?: string }).id;
+                const updatedId = updatedBooking._id || (updatedBooking as { id?: string }).id;
+                const isMatch = Boolean(bId && updatedId && bId === updatedId);
+                return isMatch ? { ...b, ...updatedBooking } : b;
+              })
             );
           }}
         />

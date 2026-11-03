@@ -69,6 +69,8 @@ export function EditBookingModal({
     : 0;
   const estimatedTotal = Math.round(durationHours * pricePerHour);
 
+  const bookingId = booking._id || (booking as { id?: string }).id;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isValidTime) {
@@ -76,23 +78,50 @@ export function EditBookingModal({
       return;
     }
 
+    if (!bookingId) {
+      setErrorMsg("Unable to identify booking record ID.");
+      return;
+    }
+
     setSubmitting(true);
     setErrorMsg("");
 
     try {
-      const res = await apiRequest<{ booking?: Booking; message?: string }>(
-        `/bookings/${booking._id}`,
-        {
-          method: "PUT",
-          body: JSON.stringify({
-            date,
-            startTime,
-            endTime,
-            guestCount: Number(guestCount),
-            notes: notes.trim(),
-          }),
+      let res: { booking?: Booking; message?: string } | null = null;
+      try {
+        res = await apiRequest<{ booking?: Booking; message?: string }>(
+          `/bookings/${bookingId}`,
+          {
+            method: "PUT",
+            body: JSON.stringify({
+              date,
+              startTime,
+              endTime,
+              guestCount: Number(guestCount),
+              notes: notes.trim(),
+            }),
+          }
+        );
+      } catch (putErr: unknown) {
+        const errMessage = putErr instanceof Error ? putErr.message : String(putErr);
+        if (errMessage.includes("404") || errMessage.includes("Not Found")) {
+          res = await apiRequest<{ booking?: Booking; message?: string }>(
+            `/bookings/${bookingId}`,
+            {
+              method: "PATCH",
+              body: JSON.stringify({
+                date,
+                startTime,
+                endTime,
+                guestCount: Number(guestCount),
+                notes: notes.trim(),
+              }),
+            }
+          );
+        } else {
+          throw putErr;
         }
-      );
+      }
 
       const updated = res?.booking || {
         ...booking,
